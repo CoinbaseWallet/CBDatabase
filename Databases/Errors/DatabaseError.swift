@@ -3,7 +3,7 @@
 import Foundation
 
 /// Represents Database Errors
-enum DatabaseError: Error {
+public enum DatabaseError: Error {
     /// Error thrown when db unable to store model
     case unableToStoreModelObject
 
