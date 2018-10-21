@@ -4,7 +4,7 @@ import Foundation
 
 /// CoreData requires `NSObject` for `Transformable` data type option. This protocol can be used to register
 /// custom transformers
-protocol DatabaseTransformable {
+public protocol DatabaseTransformable {
     static func toDatabase(value: Any?) -> Any?
     static func fromDatabase(value: Any?) -> Any?
 

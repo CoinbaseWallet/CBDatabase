@@ -3,16 +3,16 @@
 import Foundation
 
 /// Represents a db update observed in `Database`
-struct DatabaseUpdate<T> {
+public struct DatabaseUpdate<T> {
     /// Inserted models
-    let insertedObjects: [T]
+    public let insertedObjects: [T]
 
     /// Updated models
-    let updatedObjects: [T]
+    public let updatedObjects: [T]
 
     /// Deleted models
-    let deletedObjects: [T]
+    public let deletedObjects: [T]
 
     /// Refreshed models
-    let refreshedObjects: [T]
+    public let refreshedObjects: [T]
 }

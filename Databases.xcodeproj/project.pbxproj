@@ -23,7 +23,6 @@
 		E75CDDE3217D185500DDC4C8 /* DatabaseTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCF217D185500DDC4C8 /* DatabaseTransformable.swift */; };
 		E75CDDE4217D185500DDC4C8 /* DatabaseDecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */; };
 		E75CDDE5217D185500DDC4C8 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */; };
-		E75CDDE6217D185500DDC4C8 /* Database.xcdatamodeld.zip in Resources */ = {isa = PBXBuildFile; fileRef = E75CDDD4217D185500DDC4C8 /* Database.xcdatamodeld.zip */; };
 		E75CDDE7217D185500DDC4C8 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD5217D185500DDC4C8 /* Database.swift */; };
 		E75CDDE9217D185500DDC4C8 /* DatabaseModelObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD9217D185500DDC4C8 /* DatabaseModelObject.swift */; };
 		E75CDDEA217D185500DDC4C8 /* DatabaseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDDA217D185500DDC4C8 /* DatabaseStorage.swift */; };
@@ -63,7 +62,6 @@
 		E75CDDCF217D185500DDC4C8 /* DatabaseTransformable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseTransformable.swift; sourceTree = "<group>"; };
 		E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseDecoderError.swift; sourceTree = "<group>"; };
 		E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
-		E75CDDD4217D185500DDC4C8 /* Database.xcdatamodeld.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = Database.xcdatamodeld.zip; sourceTree = "<group>"; };
 		E75CDDD5217D185500DDC4C8 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		E75CDDD7217D185500DDC4C8 /* v2.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = v2.0.xcdatamodel; sourceTree = "<group>"; };
 		E75CDDD8217D185500DDC4C8 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -215,7 +213,6 @@
 		E75CDDD3217D185500DDC4C8 /* DB */ = {
 			isa = PBXGroup;
 			children = (
-				E75CDDD4217D185500DDC4C8 /* Database.xcdatamodeld.zip */,
 				E75CDDD5217D185500DDC4C8 /* Database.swift */,
 				E75CDDD9217D185500DDC4C8 /* DatabaseModelObject.swift */,
 				E75CDDDA217D185500DDC4C8 /* DatabaseStorage.swift */,
@@ -317,7 +314,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E75CDDE6217D185500DDC4C8 /* Database.xcdatamodeld.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

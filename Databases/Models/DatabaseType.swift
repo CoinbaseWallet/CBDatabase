@@ -3,7 +3,7 @@
 import Foundation
 
 /// Represents type of database storage
-enum DatabaseStorageType {
+public enum DatabaseStorageType {
     /// Store data into local disk. URL used to specify file location. A default will be set if no value is supplied
     case sqlite(URL?)
 

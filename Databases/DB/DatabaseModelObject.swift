@@ -11,7 +11,7 @@ import CoreData
 ///     2. Create a new struct that conforms to DatabaseModelObject.
 ///         - Add the entity's attributes as ivars.
 ///         - If the entity name differs from the name of the struct, be sure to override entityName.
-protocol DatabaseModelObject: Codable, Hashable {
+public protocol DatabaseModelObject: Codable, Hashable {
     var id: String { get }
 }
 

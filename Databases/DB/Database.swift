@@ -10,7 +10,7 @@ public final class Database {
     private let storage: DatabaseStorage
     private var transformers = [String: DatabaseTransformable.Type]()
 
-    init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") {
+    public init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") {
         storage = DatabaseStorage(storage: type, modelURL: modelURL, storeName: storeName)
     }
 
@@ -19,7 +19,7 @@ public final class Database {
     /// - Parameter object: The model to add to the database.
     ///
     /// - Returns: A Single wrapping an optional model indicating whether the add succeeded.
-    func add<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
+    public func add<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
         return add([model]).map { $0?.first }
     }
 
@@ -28,7 +28,7 @@ public final class Database {
     /// - Parameter objects: The models to add to the database.
     ///
     /// - Returns: A Single wrapping an optional list of models indicating whether the add succeeded.
-    func add<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
+    public func add<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
         return storage
             .perform(operation: .write) { context -> [T] in
                 for model in models {
@@ -46,7 +46,7 @@ public final class Database {
     /// - Parameter objects: The model to add to the database.
     ///
     /// - Returns: A Single wrapping an optional  model indicating whether the add/update succeeded.
-    func addOrUpdate<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
+    public func addOrUpdate<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
         return addOrUpdate([model]).map { $0?.first }
     }
 
@@ -55,7 +55,7 @@ public final class Database {
     /// - Parameter objects: The models to add to the database.
     ///
     /// - Returns: A Single wrapping an optional list of models indicating whether the add/update succeeded.
-    func addOrUpdate<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
+    public func addOrUpdate<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
         return storage
             .perform(operation: .write) { context -> [T] in
                 // check if model exists in database
@@ -91,7 +91,7 @@ public final class Database {
     ///
     /// - Returns: A Single representing whether the update succeeded. Succeeds is false if the object is not already
     ///     in the database.
-    func update<T: DatabaseModelObject>(_ object: T) -> Single<T?> {
+    public func update<T: DatabaseModelObject>(_ object: T) -> Single<T?> {
         return storage
             .perform(operation: .write) { context -> T? in
                 if let managedObject = try context.fetch(T.self, identifier: object.id) {
@@ -112,7 +112,7 @@ public final class Database {
     ///     - sortDescriptors: Sort descriptors inidicating the order the items are reutrn in.
     ///
     /// - Returns: A Single wrapping the items returned by the fetch.
-    func fetch<T: DatabaseModelObject>(
+    public func fetch<T: DatabaseModelObject>(
         predicate: NSPredicate? = nil,
         sortDescriptors: [NSSortDescriptor]? = []
     ) -> Single<[T]> {
@@ -135,7 +135,7 @@ public final class Database {
     ///     - predicate: A predicate filtering the results of the fetch. If none pased, all items are counted
     ///
     /// - Returns: A Single wrapping the items returned by the fetch.
-    func count<T: DatabaseModelObject>(for _: T.Type, predicate: NSPredicate? = nil) -> Single<Int> {
+    public func count<T: DatabaseModelObject>(for _: T.Type, predicate: NSPredicate? = nil) -> Single<Int> {
         return storage.perform(operation: .read) { context -> Int in
             try context.count(entityName: T.entityName, predicate: predicate)
         }
@@ -147,7 +147,7 @@ public final class Database {
     ///     - predicate: A predicate filtering the results of the fetch.
     ///
     /// - Returns: A Single wrapping the items returned by the fetch.
-    func fetchOne<T: DatabaseModelObject>(predicate: NSPredicate?) -> Single<T?> {
+    public func fetchOne<T: DatabaseModelObject>(predicate: NSPredicate?) -> Single<T?> {
         return storage.perform(operation: .read) { context -> T? in
             let items = try context.fetch(entityName: T.entityName, predicate: predicate, sortDescriptors: [])
             guard let item = items.first else { return nil }
@@ -162,7 +162,7 @@ public final class Database {
     ///     - identifier: The identifier of the object to be deleted.
     ///
     /// - Returns: A Single wrapping a boolean indicating whether the delete succeeded.
-    func delete<T: DatabaseModelObject>(_ type: T.Type, identifier: String) -> Single<Bool> {
+    public func delete<T: DatabaseModelObject>(_ type: T.Type, identifier: String) -> Single<Bool> {
         return storage.perform(operation: .write) { context -> Bool in
             try context.delete(type, identifier: identifier)
         }
@@ -173,7 +173,7 @@ public final class Database {
     ///
     /// - Parameter type: The type of the objects to be deleted.
     /// - Returns: A Single wrapping a boolean indicating whether the delete succeeded.
-    func deleteAll<T: DatabaseModelObject>(of type: T.Type) -> Single<Bool> {
+    public func deleteAll<T: DatabaseModelObject>(of type: T.Type) -> Single<Bool> {
         return storage.perform(operation: .write) { context -> Bool in
             try context.deleteAll(type)
             return true
@@ -188,7 +188,7 @@ public final class Database {
     ///     - id:        Filter observer by model ID
     ///
     /// - Returns: Single wrapping the updated model or an error is thrown
-    func observe<T: DatabaseModelObject>(for _: T.Type, id: String) -> Observable<T> {
+    public func observe<T: DatabaseModelObject>(for _: T.Type, id: String) -> Observable<T> {
         return NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
             .observeOn(concurrentDispatchQueueScheduler)
             .map { notification -> T? in
@@ -218,7 +218,7 @@ public final class Database {
     ///     - modelType: Filter observer by model type
     ///
     /// - Returns: Single wrapping the updated model or an error is thrown
-    func observe<T: DatabaseModelObject>(for _: T.Type) -> Observable<DatabaseUpdate<T>> {
+    public func observe<T: DatabaseModelObject>(for _: T.Type) -> Observable<DatabaseUpdate<T>> {
         return NotificationCenter.default.rx.notification(.NSManagedObjectContextDidSave)
             .observeOn(concurrentDispatchQueueScheduler)
             .map { notification -> DatabaseUpdate<T>? in
@@ -288,7 +288,7 @@ public final class Database {
     ///
     /// - Parameters:
     ///     - transformer: DatabaseTransformer used to serialize/unserialize custom classes
-    func registerTransformer<T: DatabaseTransformable>(for transfomer: T.Type) {
+    public func registerTransformer<T: DatabaseTransformable>(for transfomer: T.Type) {
         let key = "\(transfomer)"
 
 
