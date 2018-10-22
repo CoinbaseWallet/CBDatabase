@@ -1,12 +1,12 @@
 platform :ios, '11.0'
 
-target 'Databases' do
+target 'CBDatabase' do
   use_frameworks!
 
   pod 'RxSwift', '~> 4.3.1'
   pod 'RxCocoa', '~> 4.3.1'
 
-  target 'DatabasesTests' do
+  target 'CBDatabaseTests' do
     inherit! :search_paths
     pod 'Quick', '~> 1.3.2'
     pod 'Nimble', '~> 7.3.1'
