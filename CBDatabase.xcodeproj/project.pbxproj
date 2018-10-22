@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		8A135DD7BF5C75B72B581F5B /* Pods_Databases.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACF73686ABAA40D0C220821B /* Pods_Databases.framework */; };
 		A0F12B0F51C5F90153521C7B /* Pods_DatabasesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C19F34D8DA6D1FC15636846 /* Pods_DatabasesTests.framework */; };
-		E75CDDB2217D178D00DDC4C8 /* Databases.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E75CDDA8217D178D00DDC4C8 /* Databases.framework */; };
+		E75CDDB2217D178D00DDC4C8 /* CBDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E75CDDA8217D178D00DDC4C8 /* CBDatabase.framework */; };
 		E75CDDB7217D178D00DDC4C8 /* DatabasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDB6217D178D00DDC4C8 /* DatabasesTests.swift */; };
 		E75CDDB9217D178D00DDC4C8 /* Databases.h in Headers */ = {isa = PBXBuildFile; fileRef = E75CDDAB217D178D00DDC4C8 /* Databases.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E75CDDDB217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDC4217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift */; };
@@ -45,10 +45,10 @@
 		9A9AA9C728B8DD335CE0FF26 /* Pods-DatabasesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DatabasesTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DatabasesTests/Pods-DatabasesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AA195FFA4C37F5C35546007C /* Pods-DatabasesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DatabasesTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DatabasesTests/Pods-DatabasesTests.release.xcconfig"; sourceTree = "<group>"; };
 		ACF73686ABAA40D0C220821B /* Pods_Databases.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Databases.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E75CDDA8217D178D00DDC4C8 /* Databases.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Databases.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E75CDDA8217D178D00DDC4C8 /* CBDatabase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBDatabase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E75CDDAB217D178D00DDC4C8 /* Databases.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Databases.h; sourceTree = "<group>"; };
 		E75CDDAC217D178D00DDC4C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E75CDDB1217D178D00DDC4C8 /* DatabasesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DatabasesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E75CDDB1217D178D00DDC4C8 /* CBDatabaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CBDatabaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E75CDDB6217D178D00DDC4C8 /* DatabasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasesTests.swift; sourceTree = "<group>"; };
 		E75CDDB8217D178D00DDC4C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E75CDDC4217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseKeyedDecodingContainer.swift; sourceTree = "<group>"; };
@@ -83,7 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E75CDDB2217D178D00DDC4C8 /* Databases.framework in Frameworks */,
+				E75CDDB2217D178D00DDC4C8 /* CBDatabase.framework in Frameworks */,
 				A0F12B0F51C5F90153521C7B /* Pods_DatabasesTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -114,7 +114,7 @@
 		E75CDD9E217D178D00DDC4C8 = {
 			isa = PBXGroup;
 			children = (
-				E75CDDAA217D178D00DDC4C8 /* Databases */,
+				E75CDDAA217D178D00DDC4C8 /* CBDatabase */,
 				E75CDDB5217D178D00DDC4C8 /* DatabasesTests */,
 				A470C911736EC167645DB406 /* Frameworks */,
 				C8BCF9864743F2156E0C48D0 /* Pods */,
@@ -125,13 +125,13 @@
 		E75CDDA9217D178D00DDC4C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E75CDDA8217D178D00DDC4C8 /* Databases.framework */,
-				E75CDDB1217D178D00DDC4C8 /* DatabasesTests.xctest */,
+				E75CDDA8217D178D00DDC4C8 /* CBDatabase.framework */,
+				E75CDDB1217D178D00DDC4C8 /* CBDatabaseTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E75CDDAA217D178D00DDC4C8 /* Databases */ = {
+		E75CDDAA217D178D00DDC4C8 /* CBDatabase */ = {
 			isa = PBXGroup;
 			children = (
 				E75CDDD3217D185500DDC4C8 /* DB */,
@@ -142,7 +142,7 @@
 				E75CDDC2217D183100DDC4C8 /* Module */,
 				E75CDDCE217D185500DDC4C8 /* Protocols */,
 			);
-			path = Databases;
+			path = CBDatabase;
 			sourceTree = "<group>";
 		};
 		E75CDDB5217D178D00DDC4C8 /* DatabasesTests */ = {
@@ -234,9 +234,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E75CDDA7217D178D00DDC4C8 /* Databases */ = {
+		E75CDDA7217D178D00DDC4C8 /* CBDatabase */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E75CDDBC217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "Databases" */;
+			buildConfigurationList = E75CDDBC217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "CBDatabase" */;
 			buildPhases = (
 				7DE47FBCB66BEA2ABA1310BE /* [CP] Check Pods Manifest.lock */,
 				E75CDDA3217D178D00DDC4C8 /* Headers */,
@@ -248,14 +248,14 @@
 			);
 			dependencies = (
 			);
-			name = Databases;
+			name = CBDatabase;
 			productName = Databases;
-			productReference = E75CDDA8217D178D00DDC4C8 /* Databases.framework */;
+			productReference = E75CDDA8217D178D00DDC4C8 /* CBDatabase.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		E75CDDB0217D178D00DDC4C8 /* DatabasesTests */ = {
+		E75CDDB0217D178D00DDC4C8 /* CBDatabaseTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E75CDDBF217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "DatabasesTests" */;
+			buildConfigurationList = E75CDDBF217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "CBDatabaseTests" */;
 			buildPhases = (
 				7A9D23CD5ECD26F17D84ACED /* [CP] Check Pods Manifest.lock */,
 				E75CDDAD217D178D00DDC4C8 /* Sources */,
@@ -268,9 +268,9 @@
 			dependencies = (
 				E75CDDB4217D178D00DDC4C8 /* PBXTargetDependency */,
 			);
-			name = DatabasesTests;
+			name = CBDatabaseTests;
 			productName = DatabasesTests;
-			productReference = E75CDDB1217D178D00DDC4C8 /* DatabasesTests.xctest */;
+			productReference = E75CDDB1217D178D00DDC4C8 /* CBDatabaseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -291,7 +291,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E75CDDA2217D178D00DDC4C8 /* Build configuration list for PBXProject "Databases" */;
+			buildConfigurationList = E75CDDA2217D178D00DDC4C8 /* Build configuration list for PBXProject "CBDatabase" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -303,8 +303,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E75CDDA7217D178D00DDC4C8 /* Databases */,
-				E75CDDB0217D178D00DDC4C8 /* DatabasesTests */,
+				E75CDDA7217D178D00DDC4C8 /* CBDatabase */,
+				E75CDDB0217D178D00DDC4C8 /* CBDatabaseTests */,
 			);
 		};
 /* End PBXProject section */
@@ -439,7 +439,7 @@
 /* Begin PBXTargetDependency section */
 		E75CDDB4217D178D00DDC4C8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E75CDDA7217D178D00DDC4C8 /* Databases */;
+			target = E75CDDA7217D178D00DDC4C8 /* CBDatabase */;
 			targetProxy = E75CDDB3217D178D00DDC4C8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -577,7 +577,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "$(SRCROOT)/Databases/Module/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/CBDatabase/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -602,7 +602,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "$(SRCROOT)/Databases/Module/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/CBDatabase/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -658,7 +658,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E75CDDA2217D178D00DDC4C8 /* Build configuration list for PBXProject "Databases" */ = {
+		E75CDDA2217D178D00DDC4C8 /* Build configuration list for PBXProject "CBDatabase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E75CDDBA217D178D00DDC4C8 /* Debug */,
@@ -667,7 +667,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E75CDDBC217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "Databases" */ = {
+		E75CDDBC217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "CBDatabase" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E75CDDBD217D178D00DDC4C8 /* Debug */,
@@ -676,7 +676,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E75CDDBF217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "DatabasesTests" */ = {
+		E75CDDBF217D178D00DDC4C8 /* Build configuration list for PBXNativeTarget "CBDatabaseTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E75CDDC0217D178D00DDC4C8 /* Debug */,

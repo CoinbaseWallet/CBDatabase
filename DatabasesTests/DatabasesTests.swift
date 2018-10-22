@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2018 Coinbase Inc. See LICENSE
 
 import RxBlocking
-@testable import Databases
+@testable import CBDatabase
 import XCTest
 
 let unitTestsTimeout: TimeInterval = 3
