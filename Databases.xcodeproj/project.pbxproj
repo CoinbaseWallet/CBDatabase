@@ -116,9 +116,9 @@
 			children = (
 				E75CDDAA217D178D00DDC4C8 /* Databases */,
 				E75CDDB5217D178D00DDC4C8 /* DatabasesTests */,
-				E75CDDA9217D178D00DDC4C8 /* Products */,
-				C8BCF9864743F2156E0C48D0 /* Pods */,
 				A470C911736EC167645DB406 /* Frameworks */,
+				C8BCF9864743F2156E0C48D0 /* Pods */,
+				E75CDDA9217D178D00DDC4C8 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -139,8 +139,8 @@
 				E75CDDD0217D185500DDC4C8 /* Errors */,
 				E75CDDC6217D185500DDC4C8 /* Extensions */,
 				E75CDDCA217D185500DDC4C8 /* Models */,
-				E75CDDCE217D185500DDC4C8 /* Protocols */,
 				E75CDDC2217D183100DDC4C8 /* Module */,
+				E75CDDCE217D185500DDC4C8 /* Protocols */,
 			);
 			path = Databases;
 			sourceTree = "<group>";
@@ -148,9 +148,9 @@
 		E75CDDB5217D178D00DDC4C8 /* DatabasesTests */ = {
 			isa = PBXGroup;
 			children = (
-				E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */,
 				E75CDDB6217D178D00DDC4C8 /* DatabasesTests.swift */,
 				E75CDDB8217D178D00DDC4C8 /* Info.plist */,
+				E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */,
 			);
 			path = DatabasesTests;
 			sourceTree = "<group>";
@@ -167,8 +167,8 @@
 		E75CDDC3217D185500DDC4C8 /* Decoders */ = {
 			isa = PBXGroup;
 			children = (
-				E75CDDC4217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift */,
 				E75CDDC5217D185500DDC4C8 /* DatabaseDecoder.swift */,
+				E75CDDC4217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift */,
 			);
 			path = Decoders;
 			sourceTree = "<group>";
@@ -187,8 +187,8 @@
 			isa = PBXGroup;
 			children = (
 				E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */,
-				E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */,
 				E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */,
+				E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -691,8 +691,8 @@
 		E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				E75CDDD7217D185500DDC4C8 /* v2.0.xcdatamodel */,
 				E75CDDD8217D185500DDC4C8 /* Model.xcdatamodel */,
+				E75CDDD7217D185500DDC4C8 /* v2.0.xcdatamodel */,
 			);
 			currentVersion = E75CDDD7217D185500DDC4C8 /* v2.0.xcdatamodel */;
 			path = TestDatabase.xcdatamodeld;
