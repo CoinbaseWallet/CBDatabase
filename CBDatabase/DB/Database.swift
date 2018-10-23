@@ -1,8 +1,8 @@
 // Copyright (c) 2017-2018 Coinbase Inc. See LICENSE
 
 import CoreData
-import RxSwift
 import RxCocoa
+import RxSwift
 
 public final class Database {
     private let concurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
@@ -291,7 +291,6 @@ public final class Database {
     public func registerTransformer<T: DatabaseTransformable>(for transfomer: T.Type) {
         let key = "\(transfomer)"
 
-
         assert(transformers[key] == nil, "\(key) is already registered")
 
         transformers[key] = T.self
@@ -300,6 +299,10 @@ public final class Database {
         if let optionalKey = optionalType.split(separator: ".").first {
             transformers[String(optionalKey)] = T.self
         }
+    }
 
+    /// Deletes local sqlite file
+    public func destroy() {
+        storage.destroy()
     }
 }

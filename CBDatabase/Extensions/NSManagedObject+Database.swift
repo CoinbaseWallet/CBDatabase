@@ -20,7 +20,7 @@ extension NSManagedObject {
         entity.attributesByName.forEach { attribute in
             let key = attribute.key
 
-            guard let value = self.value(forKey: key) else { return}
+            guard let value = self.value(forKey: key) else { return }
 
             if let attrClassName = attribute.value.attributeValueClassName,
                 let transformer = transformers[attrClassName] {

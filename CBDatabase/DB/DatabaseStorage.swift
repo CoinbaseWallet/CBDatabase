@@ -5,6 +5,11 @@ import RxSwift
 
 /// Database storage
 final class DatabaseStorage {
+    private static var docURL: URL? = {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
+    }()
+
+    private let storeName: String
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let multiReadSingleWriteQueue = DispatchQueue(
         label: "com.wallet.databases.multiWriteSingleReadQueue",
@@ -15,6 +20,7 @@ final class DatabaseStorage {
     let context: NSManagedObjectContext
 
     init(storage: DatabaseStorageType, modelURL: URL, storeName: String) {
+        self.storeName = storeName
         context = DatabaseStorage.createManagedObjectContext(for: storage, modelURL: modelURL, storeName: storeName)
     }
 
@@ -56,6 +62,24 @@ final class DatabaseStorage {
         .subscribeOn(scheduler)
     }
 
+    /// Delete sqlite file
+    func destroy() {
+        let storeFile = "\(storeName).sqlite"
+        let storeSHMFile = "\(storeFile)-shm"
+        let storeWALFile = "\(storeFile)-wal"
+
+        [storeFile, storeSHMFile, storeWALFile].forEach { filename in
+            guard
+                let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
+                FileManager.default.fileExists(atPath: fileURL.absoluteString)
+            else {
+                return
+            }
+
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+    }
+
     // MARK: Private helpers
 
     private static func createManagedObjectContext(
@@ -85,10 +109,7 @@ final class DatabaseStorage {
 
             if let url = url {
                 storeURL = url
-            } else if let docURL = FileManager.default.urls(
-                for: .applicationSupportDirectory,
-                in: .userDomainMask
-            ).last {
+            } else if let docURL = DatabaseStorage.docURL {
                 if !FileManager.default.fileExists(atPath: docURL.absoluteString) {
                     try? FileManager.default.createDirectory(
                         at: docURL,
@@ -96,6 +117,7 @@ final class DatabaseStorage {
                         attributes: nil
                     )
                 }
+
                 storeURL = docURL.appendingPathComponent("\(storeName).sqlite")
             } else {
                 fatalError("Unable to setup database")
