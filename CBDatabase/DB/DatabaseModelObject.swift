@@ -47,9 +47,6 @@ extension DatabaseModelObject {
         let mirror = Mirror(reflecting: self)
 
         for case let (key?, value) in mirror.children {
-            let typeKey = "\(Mirror(reflecting: value).subjectType)"
-            var value = (value as AnyObject) is NSNull ? nil : value
-
             managedObject.setValue(value, forKey: key)
         }
     }
