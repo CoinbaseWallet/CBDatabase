@@ -8,7 +8,6 @@ public final class Database {
     private let concurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let disposeBag = DisposeBag()
     private let storage: DatabaseStorage
-    private var transformers = [String: DatabaseTransformable.Type]()
 
     public init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") {
         storage = DatabaseStorage(storage: type, modelURL: modelURL, storeName: storeName)
@@ -33,7 +32,7 @@ public final class Database {
             .perform(operation: .write) { context -> [T] in
                 for model in models {
                     let managedObject = try T.new(with: context)
-                    model.configure(with: managedObject, transformers: self.transformers)
+                    model.configure(with: managedObject)
                 }
 
                 return models
@@ -77,7 +76,7 @@ public final class Database {
                         managedObject = try T.new(with: context)
                     }
 
-                    model.configure(with: managedObject, transformers: self.transformers)
+                    model.configure(with: managedObject)
                 }
 
                 return models
@@ -95,7 +94,7 @@ public final class Database {
         return storage
             .perform(operation: .write) { context -> T? in
                 if let managedObject = try context.fetch(T.self, identifier: object.id) {
-                    object.configure(with: managedObject, transformers: self.transformers)
+                    object.configure(with: managedObject)
                     return object
                 }
 
@@ -123,7 +122,7 @@ public final class Database {
                 sortDescriptors: sortDescriptors
             )
 
-            let modelItems: [T] = try items.map { try $0.modelObject(transformers: self.transformers) }
+            let modelItems: [T] = try items.map { try $0.modelObject() }
 
             return modelItems
         }
@@ -151,7 +150,7 @@ public final class Database {
         return storage.perform(operation: .read) { context -> T? in
             let items = try context.fetch(entityName: T.entityName, predicate: predicate, sortDescriptors: [])
             guard let item = items.first else { return nil }
-            return try item.modelObject(transformers: self.transformers)
+            return try item.modelObject()
         }
     }
 
@@ -199,7 +198,7 @@ public final class Database {
                     guard let objects = userInfo[operation] as? Set<NSManagedObject> else { continue }
                     return try objects.first {
                         $0.entity.name == T.entityName && ($0.value(forKey: "id") as? String) == id
-                    }?.modelObject(transformers: self.transformers)
+                    }?.modelObject()
                 }
 
                 return nil
@@ -237,19 +236,19 @@ public final class Database {
 
                 let insertedObjects: [T] = try insertedObjectsSet
                     .filter { $0.entity.name == T.entityName }
-                    .compactMap { try $0.modelObject(transformers: self.transformers) }
+                    .compactMap { try $0.modelObject() }
 
                 let updatedObjects: [T] = try updatedObjectsSet
                     .filter { $0.entity.name == T.entityName }
-                    .compactMap { try $0.modelObject(transformers: self.transformers) }
+                    .compactMap { try $0.modelObject() }
 
                 let deletedObjects: [T] = try deletedObjectsSet
                     .filter { $0.entity.name == T.entityName }
-                    .compactMap { try $0.modelObject(transformers: self.transformers) }
+                    .compactMap { try $0.modelObject() }
 
                 let refreshedObjects: [T] = try refreshedObjectsSet
                     .filter { $0.entity.name == T.entityName }
-                    .compactMap { try $0.modelObject(transformers: self.transformers) }
+                    .compactMap { try $0.modelObject() }
 
                 if insertedObjects.isEmpty &&
                     updatedObjects.isEmpty &&
@@ -282,23 +281,6 @@ public final class Database {
                 guard let update = update else { throw DatabaseError.unableToObserveModel }
                 return update
             }
-    }
-
-    /// Register custom transformers
-    ///
-    /// - Parameters:
-    ///     - transformer: DatabaseTransformer used to serialize/unserialize custom classes
-    public func registerTransformer<T: DatabaseTransformable>(for transfomer: T.Type) {
-        let key = "\(transfomer)"
-
-        assert(transformers[key] == nil, "\(key) is already registered")
-
-        transformers[key] = T.self
-
-        let optionalType = "\(Mirror(reflecting: T?.self).subjectType)"
-        if let optionalKey = optionalType.split(separator: ".").first {
-            transformers[String(optionalKey)] = T.self
-        }
     }
 
     /// Deletes local sqlite file

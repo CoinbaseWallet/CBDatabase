@@ -4,8 +4,8 @@ import CoreData
 
 extension NSManagedObject {
     /// Converts model object to NSManagedObject
-    func modelObject<T: DatabaseModelObject>(transformers: [String: DatabaseTransformable.Type]) throws -> T {
-        let encoded = self.encoded(transformers: transformers)
+    func modelObject<T: DatabaseModelObject>() throws -> T {
+        let encoded = self.encoded()
         let decoder = DatabaseDecoder(dictionary: encoded)
 
         return try decoder.decode(as: T.self)
@@ -13,7 +13,7 @@ extension NSManagedObject {
 
     // MARK: - Private helpers
 
-    private func encoded(transformers: [String: DatabaseTransformable.Type]) -> [String: Any] {
+    private func encoded() -> [String: Any] {
         let entity = self.entity
         var dictionary = [String: Any]()
 
@@ -21,12 +21,6 @@ extension NSManagedObject {
             let key = attribute.key
 
             guard let value = self.value(forKey: key) else { return }
-
-            if let attrClassName = attribute.value.attributeValueClassName,
-                let transformer = transformers[attrClassName] {
-                dictionary[key] = transformer.fromDatabase(value: value)
-                return
-            }
 
             if attribute.value.attributeType == .booleanAttributeType, let value = value as? NSNumber {
                 dictionary[key] = value.boolValue

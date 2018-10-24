@@ -38,10 +38,10 @@ extension DatabaseModelObject {
     /// match those of the struct.
     ///
     /// - Parameter context: The managed object to configure.
-    func configure(with managedObject: NSManagedObject, transformers: [String: DatabaseTransformable.Type]) {
+    func configure(with managedObject: NSManagedObject) {
         assert(managedObject.entity.name == Self.entityName)
         guard
-            managedObject.objectID.isTemporaryID || hasChange(from: managedObject, transformers: transformers)
+            managedObject.objectID.isTemporaryID || hasChange(from: managedObject)
         else { return }
 
         let mirror = Mirror(reflecting: self)
@@ -49,9 +49,6 @@ extension DatabaseModelObject {
         for case let (key?, value) in mirror.children {
             let typeKey = "\(Mirror(reflecting: value).subjectType)"
             var value = (value as AnyObject) is NSNull ? nil : value
-            if let transformedValue = transformers[typeKey]?.toDatabase(value: value) {
-                value = transformedValue
-            }
 
             managedObject.setValue(value, forKey: key)
         }
@@ -77,10 +74,9 @@ extension DatabaseModelObject {
     // MARK: - Private
 
     private func hasChange(
-        from managedObject: NSManagedObject,
-        transformers: [String: DatabaseTransformable.Type]
+        from managedObject: NSManagedObject
     ) -> Bool {
-        guard let model: Self = try? managedObject.modelObject(transformers: transformers) else { return true }
+        guard let model: Self = try? managedObject.modelObject() else { return true }
 
         let modelMirrorChildren = Mirror(reflecting: model).children.asDictionary
         let selfMirrorChildren = Mirror(reflecting: self).children.asDictionary
@@ -90,7 +86,7 @@ extension DatabaseModelObject {
         for key in selfMirrorChildren.keys {
             let selfValue = selfMirrorChildren[key]
             let modelValue = modelMirrorChildren[key]
-            if areEqual(lhs: selfValue, rhs: modelValue, transformers: transformers) != true {
+            if areEqual(lhs: selfValue, rhs: modelValue) != true {
                 return true
             }
         }
@@ -98,7 +94,7 @@ extension DatabaseModelObject {
         return false
     }
 
-    private func areEqual(lhs: Any?, rhs: Any?, transformers: [String: DatabaseTransformable.Type]) -> Bool? {
+    private func areEqual(lhs: Any?, rhs: Any?) -> Bool? {
         let lhsType = type(of: lhs)
         let rhsType = type(of: rhs)
 
@@ -154,16 +150,6 @@ extension DatabaseModelObject {
         case is URL, is URL?:
             return isEqual(type: URL.self, a: lhs, b: rhs)
         default:
-            // Compare Transformable types
-            if let lhs = lhs, let rhs = rhs {
-                let lhsKeyType = "\(Mirror(reflecting: lhs).subjectType)"
-                let rhsKeyType = "\(Mirror(reflecting: rhs).subjectType)"
-
-                if lhsKeyType == rhsKeyType, let transformer = transformers[lhsKeyType] {
-                    return transformer.areDatabaseEntriesEqual(lhs: lhs, rhs: rhs)
-                }
-            }
-
             assertionFailure("Unsupported CoreData type \(lhsType)")
             return nil
         }

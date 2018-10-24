@@ -20,7 +20,6 @@
 		E75CDDE0217D185500DDC4C8 /* DatabaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */; };
 		E75CDDE1217D185500DDC4C8 /* DatabaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */; };
 		E75CDDE2217D185500DDC4C8 /* DatabaseType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */; };
-		E75CDDE3217D185500DDC4C8 /* DatabaseTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCF217D185500DDC4C8 /* DatabaseTransformable.swift */; };
 		E75CDDE4217D185500DDC4C8 /* DatabaseDecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */; };
 		E75CDDE5217D185500DDC4C8 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */; };
 		E75CDDE7217D185500DDC4C8 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD5217D185500DDC4C8 /* Database.swift */; };
@@ -65,7 +64,6 @@
 		E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseOperation.swift; sourceTree = "<group>"; };
 		E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseUpdate.swift; sourceTree = "<group>"; };
 		E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseType.swift; sourceTree = "<group>"; };
-		E75CDDCF217D185500DDC4C8 /* DatabaseTransformable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseTransformable.swift; sourceTree = "<group>"; };
 		E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseDecoderError.swift; sourceTree = "<group>"; };
 		E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
 		E75CDDD5217D185500DDC4C8 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -152,7 +150,6 @@
 				E75CDDC6217D185500DDC4C8 /* Extensions */,
 				E75CDDCA217D185500DDC4C8 /* Models */,
 				E75CDDC2217D183100DDC4C8 /* Module */,
-				E75CDDCE217D185500DDC4C8 /* Protocols */,
 			);
 			path = CBDatabase;
 			sourceTree = "<group>";
@@ -203,14 +200,6 @@
 				E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		E75CDDCE217D185500DDC4C8 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				E75CDDCF217D185500DDC4C8 /* DatabaseTransformable.swift */,
-			);
-			path = Protocols;
 			sourceTree = "<group>";
 		};
 		E75CDDD0217D185500DDC4C8 /* Errors */ = {
@@ -428,7 +417,6 @@
 				E75CDDDE217D185500DDC4C8 /* NSManagedObject+Database.swift in Sources */,
 				E75CDDE7217D185500DDC4C8 /* Database.swift in Sources */,
 				E75CDDE9217D185500DDC4C8 /* DatabaseModelObject.swift in Sources */,
-				E75CDDE3217D185500DDC4C8 /* DatabaseTransformable.swift in Sources */,
 				E75CDDE2217D185500DDC4C8 /* DatabaseType.swift in Sources */,
 				E75CDDE1217D185500DDC4C8 /* DatabaseUpdate.swift in Sources */,
 				E75CDDDF217D185500DDC4C8 /* NSManagedObjectContext+Database.swift in Sources */,
