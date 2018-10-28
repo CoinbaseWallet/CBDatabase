@@ -13,7 +13,13 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="TestWallet" representedClassName="" syncable="YES">
+        <attribute name="balance" optional="YES" attributeType="Transformable" valueTransformerName="" customClassName="CBDatabaseTests.TestBigIntDBWrapper" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
         <element name="TestCurrency" positionX="63" positionY="144" width="128" height="90"/>
+        <element name="TestWallet" positionX="63" positionY="171" width="128" height="90"/>
     </elements>
 </model>

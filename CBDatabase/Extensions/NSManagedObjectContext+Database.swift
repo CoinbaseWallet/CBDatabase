@@ -28,7 +28,7 @@ extension NSManagedObjectContext {
     func fetch<T: DatabaseModelObject>(_: T.Type, identifier: String) throws -> NSManagedObject? {
         assert(isBackgroundContext != Thread.isMainThread)
 
-        let items: [NSManagedObject] = try fetch(T.fetchRequest(identifier: identifier))
+        let items: [NSManagedObject] = try fetch(T.fetchRequest(id: identifier))
         assert(items.count <= 1)
 
         return items.first

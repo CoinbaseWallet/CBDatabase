@@ -46,7 +46,22 @@ extension DatabaseModelObject {
 
         let mirror = Mirror(reflecting: self)
 
-        for case let (key?, value) in mirror.children {
+        for case let (key?, rawValue) in mirror.children {
+            let adjustedValue = (rawValue as AnyObject) is NSNull ? nil : rawValue
+
+            guard let value = adjustedValue else {
+                managedObject.setValue(nil, forKey: key)
+                continue
+            }
+
+            if let attributes = managedObject.entity.attributesByName[key],
+                let attributeValueClassName = attributes.attributeValueClassName,
+                let attributeValueClass = NSClassFromString(attributeValueClassName) as? DBDataTypeWrapper.Type {
+                let wrappedValue = attributeValueClass.self.init(model: value)
+                managedObject.setValue(wrappedValue, forKey: key)
+                return
+            }
+
             managedObject.setValue(value, forKey: key)
         }
     }
@@ -57,22 +72,20 @@ extension DatabaseModelObject {
     }
 
     /// - Returns: A fetch request for an object with the given identifier.
-    static func fetchRequest<T>(identifier: String) -> NSFetchRequest<T> {
+    static func fetchRequest<T>(id: String) -> NSFetchRequest<T> {
         let fetchRequest: NSFetchRequest<T> = Self.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == [c] %@", identifier)
+        fetchRequest.predicate = NSPredicate(format: "id == [c] %@", id)
         return fetchRequest
     }
 
     /// - Returns: A fetch request for this object.
     func fetchRequest<T>() -> NSFetchRequest<T> {
-        return Self.fetchRequest(identifier: id)
+        return Self.fetchRequest(id: id)
     }
 
     // MARK: - Private
 
-    private func hasChange(
-        from managedObject: NSManagedObject
-    ) -> Bool {
+    private func hasChange(from managedObject: NSManagedObject) -> Bool {
         guard let model: Self = try? managedObject.modelObject() else { return true }
 
         let modelMirrorChildren = Mirror(reflecting: model).children.asDictionary
@@ -83,72 +96,65 @@ extension DatabaseModelObject {
         for key in selfMirrorChildren.keys {
             let selfValue = selfMirrorChildren[key]
             let modelValue = modelMirrorChildren[key]
-            if areEqual(lhs: selfValue, rhs: modelValue) != true {
-                return true
-            }
+            let entityAttribute = managedObject.entity.attributesByName[key]
+            let areValuesEqual = areEqual(lhs: selfValue, rhs: modelValue, entityAttribute: entityAttribute) == true
+
+            if !areValuesEqual { return true }
         }
 
         return false
     }
 
-    private func areEqual(lhs: Any?, rhs: Any?) -> Bool? {
+    private func areEqual(lhs: Any?, rhs: Any?, entityAttribute: NSAttributeDescription?) -> Bool? {
         let lhsType = type(of: lhs)
         let rhsType = type(of: rhs)
 
+        func isEqual<T: Equatable>(type _: T.Type, a: Any?, b: Any?) -> Bool? {
+            guard let a = a as? T, let b = b as? T else { return nil }
+            return a == b
+        }
+
+        // Check if we're comparing the same data type
         if lhsType != rhsType {
             return false
         }
 
-        func isEqual<T: Equatable>(type _: T.Type, a: Any?, b: Any?) -> Bool? {
-            guard let a = a as? T, let b = b as? T else { return nil }
-
-            return a == b
+        // Check nulls
+        if lhs == nil && rhs == nil {
+            return true
         }
 
-        switch lhs {
-        case nil:
-            return rhs == nil
-        case is Int, is Int?:
-            return isEqual(type: Int.self, a: lhs, b: rhs)
-        case is UInt, is UInt?:
-            return isEqual(type: UInt.self, a: lhs, b: rhs)
-        case is Int8, is Int8?:
-            return isEqual(type: Int8.self, a: lhs, b: rhs)
-        case is UInt8, is UInt8?:
-            return isEqual(type: UInt8.self, a: lhs, b: rhs)
-        case is Int16, is Int16?:
-            return isEqual(type: Int16.self, a: lhs, b: rhs)
-        case is UInt16, is UInt16?:
-            return isEqual(type: UInt16.self, a: lhs, b: rhs)
-        case is Int32, is Int32?:
-            return isEqual(type: Int32.self, a: lhs, b: rhs)
-        case is UInt32, is UInt32?:
-            return isEqual(type: UInt32.self, a: lhs, b: rhs)
-        case is Int64, is Int64?:
-            return isEqual(type: Int64.self, a: lhs, b: rhs)
-        case is UInt64, is UInt64?:
-            return isEqual(type: UInt64.self, a: lhs, b: rhs)
-        case is Decimal, is Decimal?:
-            return isEqual(type: Decimal.self, a: lhs, b: rhs)
-        case is Double, is Double?:
-            return isEqual(type: Double.self, a: lhs, b: rhs)
-        case is Float, is Float?:
-            return isEqual(type: Float.self, a: lhs, b: rhs)
-        case is String, is String?:
-            return isEqual(type: String.self, a: lhs, b: rhs)
-        case is Bool, is Bool?:
-            return isEqual(type: Bool.self, a: lhs, b: rhs)
-        case is Date, is Date?:
-            return isEqual(type: Date.self, a: lhs, b: rhs)
-        case is Data, is Data?:
-            return isEqual(type: Data.self, a: lhs, b: rhs)
-        case is UUID, is UUID?:
-            return isEqual(type: UUID.self, a: lhs, b: rhs)
-        case is URL, is URL?:
-            return isEqual(type: URL.self, a: lhs, b: rhs)
-        default:
-            assertionFailure("Unsupported CoreData type \(lhsType)")
-            return nil
+        // Check if the property conforms to `DBDataTypeEquality`. If so, compare using protocol.
+        guard let lhs = lhs, let rhs = rhs else { return false }
+
+        if let lhsEquality = lhs as? DBDataTypeEquality, let rhsEquality = rhs as? DBDataTypeEquality {
+            return lhsEquality.isEqual(to: rhsEquality)
         }
+
+        // Check if the property conforms to `DBDataTypeWrapper`. If so, compare the internal model.
+        guard
+            let attributeValueClassName = entityAttribute?.attributeValueClassName,
+            let attributeValueClass = NSClassFromString(attributeValueClassName) as? DBDataTypeWrapper.Type
+        else {
+            assertionFailure(
+                """
+
+                *******************************************************************************************
+                Unsupported data type [\(lhsType)]. Create a class that conforms `DBDataTypeWrapper` or
+                conform to DBDataTypeEquality if new type already subclasses `NSObject`
+                *******************************************************************************************
+
+                """
+            )
+
+            return false
+        }
+
+        if let lhsWrapper = attributeValueClass.self.init(model: lhs),
+            let rhsWrapper = attributeValueClass.self.init(model: rhs) {
+            return lhsWrapper.isEqual(to: rhsWrapper)
+        }
+
+        return false
     }
 }

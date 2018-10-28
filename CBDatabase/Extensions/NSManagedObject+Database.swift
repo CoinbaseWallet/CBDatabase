@@ -25,6 +25,9 @@ extension NSManagedObject {
             if attribute.value.attributeType == .booleanAttributeType, let value = value as? NSNumber {
                 dictionary[key] = value.boolValue
                 return
+            } else if let wrapper = value as? DBDataTypeWrapper {
+                dictionary[key] = wrapper.asModel.map { $0 }
+                return
             }
 
             dictionary[key] = value
