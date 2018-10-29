@@ -59,7 +59,7 @@ extension DatabaseModelObject {
                 let attributeValueClass = NSClassFromString(attributeValueClassName) as? DBDataTypeWrapper.Type {
                 let wrappedValue = attributeValueClass.self.init(model: value)
                 managedObject.setValue(wrappedValue, forKey: key)
-                return
+                continue
             }
 
             managedObject.setValue(value, forKey: key)
