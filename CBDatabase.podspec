@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '10.0'
   s.swift_version = '4.2'
-  s.source_files = 'CBDatabase/**/*'
+  s.source_files = 'CBDatabase/**/*.swift'
 
   s.dependency 'RxSwift', '~> 4.3.0'
   s.dependency 'RxCocoa', '~> 4.3.0'
