@@ -19,7 +19,7 @@ DEPENDENCIES:
   - RxSwift (~> 4.3.1)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - BigInt
     - Nimble
     - Quick
@@ -37,6 +37,6 @@ SPEC CHECKSUMS:
   RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
   SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
 
-PODFILE CHECKSUM: 2e8d8fff6250549884414244ef98f13ec4cbae8c
+PODFILE CHECKSUM: b107d7a3fc75f791fd21ed63b1ed1aa6335397a8
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.5.0

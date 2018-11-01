@@ -12,7 +12,30 @@ import CoreData
 ///         - Add the entity's attributes as ivars.
 ///         - If the entity name differs from the name of the struct, be sure to override entityName.
 public protocol DatabaseModelObject: Codable, Hashable {
+    static var entityName: String { get }
+}
+
+public protocol IdentifiableDatabaseModelObject: DatabaseModelObject {
     var id: String { get }
+    static var idField: String { get }
+}
+
+extension IdentifiableDatabaseModelObject {
+    /// The field name for the primary key
+    static var idField: String { return "id" }
+    
+    /// - Returns: A fetch request for this object.
+    func fetchRequest<T>() -> NSFetchRequest<T> {
+        return Self.fetchRequest(id: id)
+    }
+    
+    
+    /// - Returns: A fetch request for an object with the given identifier.
+    static func fetchRequest<T>(id: String) -> NSFetchRequest<T> {
+        let fetchRequest: NSFetchRequest<T> = Self.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "%@ == [c] %@", Self.idField, id)
+        return fetchRequest
+    }
 }
 
 extension DatabaseModelObject {
@@ -69,18 +92,6 @@ extension DatabaseModelObject {
     /// - Returns: A fetch request for all objects of this type.
     static func fetchRequest<T>() -> NSFetchRequest<T> {
         return NSFetchRequest(entityName: Self.entityName)
-    }
-
-    /// - Returns: A fetch request for an object with the given identifier.
-    static func fetchRequest<T>(id: String) -> NSFetchRequest<T> {
-        let fetchRequest: NSFetchRequest<T> = Self.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == [c] %@", id)
-        return fetchRequest
-    }
-
-    /// - Returns: A fetch request for this object.
-    func fetchRequest<T>() -> NSFetchRequest<T> {
-        return Self.fetchRequest(id: id)
     }
 
     // MARK: - Private

@@ -45,7 +45,7 @@ public final class Database {
     /// - Parameter objects: The model to add to the database.
     ///
     /// - Returns: A Single wrapping an optional  model indicating whether the add/update succeeded.
-    public func addOrUpdate<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
+    public func addOrUpdate<T: IdentifiableDatabaseModelObject>(_ model: T) -> Single<T?> {
         return addOrUpdate([model]).map { $0?.first }
     }
 
@@ -54,7 +54,7 @@ public final class Database {
     /// - Parameter objects: The models to add to the database.
     ///
     /// - Returns: A Single wrapping an optional list of models indicating whether the add/update succeeded.
-    public func addOrUpdate<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
+    public func addOrUpdate<T: IdentifiableDatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
         return storage
             .perform(operation: .write) { context -> [T] in
                 // check if model exists in database
@@ -90,7 +90,7 @@ public final class Database {
     ///
     /// - Returns: A Single representing whether the update succeeded. Succeeds is false if the object is not already
     ///     in the database.
-    public func update<T: DatabaseModelObject>(_ object: T) -> Single<T?> {
+    public func update<T: IdentifiableDatabaseModelObject>(_ object: T) -> Single<T?> {
         return storage
             .perform(operation: .write) { context -> T? in
                 if let managedObject = try context.fetch(T.self, identifier: object.id) {
@@ -161,7 +161,7 @@ public final class Database {
     ///     - identifier: The identifier of the object to be deleted.
     ///
     /// - Returns: A Single wrapping a boolean indicating whether the delete succeeded.
-    public func delete<T: DatabaseModelObject>(_ type: T.Type, identifier: String) -> Single<Bool> {
+    public func delete<T: IdentifiableDatabaseModelObject>(_ type: T.Type, identifier: String) -> Single<Bool> {
         return storage.perform(operation: .write) { context -> Bool in
             try context.delete(type, identifier: identifier)
         }

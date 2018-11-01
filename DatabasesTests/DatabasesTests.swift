@@ -90,7 +90,7 @@ struct TestCurrency: DatabaseModelObject {
     }
 }
 
-struct TestWallet: DatabaseModelObject {
+struct TestWallet: IdentifiableDatabaseModelObject {
     let id: String
     let name: String?
     let balance: BigInt

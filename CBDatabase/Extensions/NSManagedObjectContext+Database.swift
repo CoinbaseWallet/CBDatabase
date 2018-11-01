@@ -25,7 +25,7 @@ extension NSManagedObjectContext {
         return try count(for: request)
     }
 
-    func fetch<T: DatabaseModelObject>(_: T.Type, identifier: String) throws -> NSManagedObject? {
+    func fetch<T: IdentifiableDatabaseModelObject>(_: T.Type, identifier: String) throws -> NSManagedObject? {
         assert(isBackgroundContext != Thread.isMainThread)
 
         let items: [NSManagedObject] = try fetch(T.fetchRequest(id: identifier))
@@ -34,7 +34,7 @@ extension NSManagedObjectContext {
         return items.first
     }
 
-    func delete<T: DatabaseModelObject>(_ type: T.Type, identifier: String) throws -> Bool {
+    func delete<T: IdentifiableDatabaseModelObject>(_ type: T.Type, identifier: String) throws -> Bool {
         assert(isBackgroundContext != Thread.isMainThread)
 
         guard let object = try fetch(type, identifier: identifier) else { return false }
