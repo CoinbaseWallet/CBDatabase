@@ -57,11 +57,37 @@ class DatabasesTests: XCTestCase {
             .toBlocking(timeout: unitTestsTimeout)
             .single()
 
-        XCTAssertNotNil(actualWallet)
+        XCTAssertNotNil(actualWallet2)
         XCTAssertEqual(expectedWallet2.id, actualWallet2?.id)
         XCTAssertEqual(expectedWallet2.name, actualWallet2?.name)
         XCTAssertEqual(expectedWallet2.balance, actualWallet2?.balance)
     }
+    
+    func testAdvancedModel() throws {
+        let database = Database(type: .sqlite(nil), modelURL: dbURL)
+        let expectedValue = TestAdvancedModel(customIdField: UUID().uuidString)
+        
+        _ = try database.add(expectedValue).toBlocking(timeout: unitTestsTimeout).single()
+        
+        let predicate = NSPredicate(format: "customIdField == [c] %@", expectedValue.id)
+        let actualValue: TestAdvancedModel? = try database.fetchOne(predicate: predicate)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+        
+        XCTAssertNotNil(actualValue)
+        XCTAssertEqual(expectedValue.id, actualValue?.id)
+        
+        let expectedValue2 = TestAdvancedModel(customIdField: expectedValue.id)
+        _ = try database.addOrUpdate(expectedValue2).toBlocking(timeout: unitTestsTimeout).single()
+        
+        let actualValue2: TestAdvancedModel? = try database.fetchOne(predicate: predicate)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+        
+        XCTAssertNotNil(actualValue2)
+        XCTAssertEqual(expectedValue2.id, actualValue2?.id)
+    }
+
 }
 
 struct TestCurrency: DatabaseModelObject {
@@ -94,6 +120,14 @@ struct TestWallet: DatabaseModelObject {
     let id: String
     let name: String?
     let balance: BigInt
+}
+
+struct TestAdvancedModel: DatabaseModelObject {
+    static let entityName = "AdvancedModelCoreData"
+    static let idColumn = "customIdField"
+    
+    var id: String { return customIdField }
+    let customIdField: String
 }
 
 public final class TestBigIntDBWrapper: NSObject, DBDataTypeWrapper {

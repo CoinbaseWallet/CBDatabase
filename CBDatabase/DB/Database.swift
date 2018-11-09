@@ -59,11 +59,12 @@ public final class Database {
             .perform(operation: .write) { context -> [T] in
                 // check if model exists in database
                 let ids = models.map { $0.id }
-                let predicate = NSPredicate(format: "id in %@", ids)
+                let idField = T.idColumnName
+                let predicate = NSPredicate(format: "%K in %@", idField, ids)
                 let managedObjectMap: [String: NSManagedObject] = try context
                     .fetch(entityName: T.entityName, predicate: predicate)
                     .reduce(into: [:]) { dict, managedObject in
-                        guard let id = managedObject.value(forKey: "id") as? String else { return }
+                        guard let id = managedObject.value(forKey: idField) as? String else { return }
                         dict[id] = managedObject
                     }
 
