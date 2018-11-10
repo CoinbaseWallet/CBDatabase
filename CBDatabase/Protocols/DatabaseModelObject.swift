@@ -23,7 +23,7 @@ public protocol DatabaseModelObject: Codable, Hashable {
     var id: String { get }
 }
 
-extension DatabaseModelObject {
+public extension DatabaseModelObject {
     static var idColumnName: String {
         return "id"
     }
@@ -31,7 +31,9 @@ extension DatabaseModelObject {
     static var entityName: String {
         return String(describing: Self.self)
     }
+}
 
+extension DatabaseModelObject {
     /// Create a new managed object.
     ///
     /// - Parameter context: The context in which to insert the managed object.
