@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>CBDatabase.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
+		</dict>
 		<key>Databases.xcscheme</key>
 		<dict>
 			<key>orderHint</key>

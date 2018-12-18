@@ -124,7 +124,7 @@ struct TestWallet: DatabaseModelObject {
 
 struct TestAdvancedModel: DatabaseModelObject {
     static let entityName = "AdvancedModelCoreData"
-    static let idColumn = "customIdField"
+    static let idColumnName = "customIdField"
     
     var id: String { return customIdField }
     let customIdField: String
