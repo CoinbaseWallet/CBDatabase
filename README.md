@@ -68,12 +68,13 @@ let _ = db.fetch().flatMap { users: [User] in
 ```
 
 # Quickstart
-To create a new model you first need to add it to your xcmodel file. *Make sure to make "Name" empty and set CodeGen to Manual/None.*
+To create a new model you first need to add it to your xcmodel file. **Make sure to make "Name" empty and set CodeGen to Manual/None.**
+
 ![screen shot 2019-01-03 at 4 25 57 pm](https://user-images.githubusercontent.com/93/50662435-619fdb00-0f74-11e9-959b-c4ab94f95ebc.png)
 
 You can then implement the model using a `struct` which conforms to `DatabaseModelObject`.
 
-Note: *All model objects require an ID*
+Note :exclamation: **All model objects require an ID**
 
 # Updating
 To update a record use `addOrUpdate` which will either create a new object or update an old object based on ID. 
