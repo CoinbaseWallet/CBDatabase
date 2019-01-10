@@ -88,6 +88,52 @@ class DatabasesTests: XCTestCase {
         XCTAssertEqual(expectedValue2.id, actualValue2?.id)
     }
 
+    func testFetchLimit() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let result: [TestCurrency] = try database.fetch(fetchLimit: 1)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        XCTAssertEqual(1, result.count)
+    }
+
+    func testFetchOffset() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+            ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let sortDescriptors = [NSSortDescriptor(key: "code", ascending: true)]
+
+        let result: [TestCurrency] = try database.fetch(sortDescriptors: sortDescriptors, fetchLimit: 1)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        let offsetResult: [TestCurrency] = try database.fetch(
+            sortDescriptors: sortDescriptors,
+            fetchOffset: 1,
+            fetchLimit: 1
+            )
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        XCTAssertEqual("ATC", result.first?.code)
+        XCTAssertEqual("HTC", offsetResult.first?.code)
+    }
 }
 
 struct TestCurrency: DatabaseModelObject {
