@@ -134,6 +134,30 @@ class DatabasesTests: XCTestCase {
         XCTAssertEqual("ATC", result.first?.code)
         XCTAssertEqual("HTC", offsetResult.first?.code)
     }
+
+    func testFetchOne() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+        ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        var sortDescriptors = [NSSortDescriptor(key: "code", ascending: false)]
+        var result: TestCurrency? = try database.fetchOne(sortDescriptors: sortDescriptors)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+        XCTAssertEqual("JTC", result?.code)
+
+        sortDescriptors = [NSSortDescriptor(key: "code", ascending: true)]
+        result = try database.fetchOne(sortDescriptors: sortDescriptors)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+        XCTAssertEqual("ATC", result?.code)
+    }
 }
 
 struct TestCurrency: DatabaseModelObject {

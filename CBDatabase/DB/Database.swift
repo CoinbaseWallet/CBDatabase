@@ -109,7 +109,7 @@ public final class Database {
     /// - Parameters:
     ///     - predicate:       A predicate filtering the results of the fetch. If none is passed in all items of type T
     ///                        are returned.
-    ///     - sortDescriptors: Sort descriptors indicating the order the items are reutrn in.
+    ///     - sortDescriptors: Sort descriptors indicating the order of the results.
     ///     - fetchOffset:     The fetch offset of the fetch request.
     ///     - fetchLimit:      The fetch limit specifies the maximum number of objects that a request should return when
     ///                        executed.
@@ -139,7 +139,7 @@ public final class Database {
     /// Counts total objects from the data store.
     ///
     /// - Parameters:
-    ///     - predicate: A predicate filtering the results of the fetch. If none pased, all items are counted
+    ///     - predicate: A predicate filtering the results of the fetch. If none passed, all items are counted.
     ///
     /// - Returns: A Single wrapping the items returned by the fetch.
     public func count<T: DatabaseModelObject>(for _: T.Type, predicate: NSPredicate? = nil) -> Single<Int> {
@@ -152,14 +152,18 @@ public final class Database {
     ///
     /// - Parameters:
     ///     - predicate: A predicate filtering the results of the fetch.
+    ///     - sortDescriptors: Sort descriptors indicating the order of the results, the first of which is returned
     ///
-    /// - Returns: A Single wrapping the items returned by the fetch.
-    public func fetchOne<T: DatabaseModelObject>(predicate: NSPredicate?) -> Single<T?> {
+    /// - Returns: A Single wrapping the item returned by the fetch.
+    public func fetchOne<T: DatabaseModelObject>(
+        predicate: NSPredicate? = nil,
+        sortDescriptors: [NSSortDescriptor]? = []
+    ) -> Single<T?> {
         return storage.perform(operation: .read) { context -> T? in
             let items = try context.fetch(
                 entityName: T.entityName,
                 predicate: predicate,
-                sortDescriptors: [],
+                sortDescriptors: sortDescriptors,
                 fetchLimit: 1
             )
 
