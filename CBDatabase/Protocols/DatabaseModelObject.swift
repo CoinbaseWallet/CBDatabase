@@ -14,7 +14,7 @@ import CoreData
 public protocol DatabaseModelObject: Codable, Hashable {
     /// The entity name of the managed object. By default this returns the same name of the struct.
     static var entityName: String { get }
-    
+
     /// Column that uniquely represents this object in CoreData. Used to find the object for things like `addOrUpdate`.
     /// Defaults to "id"
     static var idColumnName: String { get }
@@ -27,7 +27,7 @@ public extension DatabaseModelObject {
     static var idColumnName: String {
         return "id"
     }
-    
+
     static var entityName: String {
         return String(describing: Self.self)
     }

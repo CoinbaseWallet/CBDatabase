@@ -107,20 +107,27 @@ public final class Database {
     /// Fetches objects from the data store.
     ///
     /// - Parameters:
-    ///     - predicate: A predicate filtering the results of the fetch. If none is passed in all items of type T are
-    ///         returned.
-    ///     - sortDescriptors: Sort descriptors inidicating the order the items are reutrn in.
+    ///     - predicate:       A predicate filtering the results of the fetch. If none is passed in all items of type T
+    ///                        are returned.
+    ///     - sortDescriptors: Sort descriptors indicating the order the items are reutrn in.
+    ///     - fetchOffset:     The fetch offset of the fetch request.
+    ///     - fetchLimit:      The fetch limit specifies the maximum number of objects that a request should return when
+    ///                        executed.
     ///
     /// - Returns: A Single wrapping the items returned by the fetch.
     public func fetch<T: DatabaseModelObject>(
         predicate: NSPredicate? = nil,
-        sortDescriptors: [NSSortDescriptor]? = []
+        sortDescriptors: [NSSortDescriptor]? = [],
+        fetchOffset: Int? = nil,
+        fetchLimit: Int? = nil
     ) -> Single<[T]> {
         return storage.perform(operation: .read) { context -> [T] in
             let items = try context.fetch(
                 entityName: T.entityName,
                 predicate: predicate,
-                sortDescriptors: sortDescriptors
+                sortDescriptors: sortDescriptors,
+                fetchOffset: fetchOffset,
+                fetchLimit: fetchLimit
             )
 
             let modelItems: [T] = try items.map { try $0.modelObject() }
@@ -149,7 +156,13 @@ public final class Database {
     /// - Returns: A Single wrapping the items returned by the fetch.
     public func fetchOne<T: DatabaseModelObject>(predicate: NSPredicate?) -> Single<T?> {
         return storage.perform(operation: .read) { context -> T? in
-            let items = try context.fetch(entityName: T.entityName, predicate: predicate, sortDescriptors: [])
+            let items = try context.fetch(
+                entityName: T.entityName,
+                predicate: predicate,
+                sortDescriptors: [],
+                fetchLimit: 1
+            )
+
             guard let item = items.first else { return nil }
             return try item.modelObject()
         }

@@ -62,32 +62,78 @@ class DatabasesTests: XCTestCase {
         XCTAssertEqual(expectedWallet2.name, actualWallet2?.name)
         XCTAssertEqual(expectedWallet2.balance, actualWallet2?.balance)
     }
-    
+
     func testAdvancedModel() throws {
         let database = Database(type: .sqlite(nil), modelURL: dbURL)
         let expectedValue = TestAdvancedModel(customIdField: UUID().uuidString)
-        
+
         _ = try database.add(expectedValue).toBlocking(timeout: unitTestsTimeout).single()
-        
+
         let predicate = NSPredicate(format: "customIdField == [c] %@", expectedValue.id)
         let actualValue: TestAdvancedModel? = try database.fetchOne(predicate: predicate)
             .toBlocking(timeout: unitTestsTimeout)
             .single()
-        
+
         XCTAssertNotNil(actualValue)
         XCTAssertEqual(expectedValue.id, actualValue?.id)
-        
+
         let expectedValue2 = TestAdvancedModel(customIdField: expectedValue.id)
         _ = try database.addOrUpdate(expectedValue2).toBlocking(timeout: unitTestsTimeout).single()
-        
+
         let actualValue2: TestAdvancedModel? = try database.fetchOne(predicate: predicate)
             .toBlocking(timeout: unitTestsTimeout)
             .single()
-        
+
         XCTAssertNotNil(actualValue2)
         XCTAssertEqual(expectedValue2.id, actualValue2?.id)
     }
 
+    func testFetchLimit() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+        ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let result: [TestCurrency] = try database.fetch(fetchLimit: 1)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        XCTAssertEqual(1, result.count)
+    }
+
+    func testFetchOffset() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+        ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let sortDescriptors = [NSSortDescriptor(key: "code", ascending: true)]
+
+        let result: [TestCurrency] = try database.fetch(sortDescriptors: sortDescriptors, fetchLimit: 1)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        let offsetResult: [TestCurrency] = try database.fetch(
+            sortDescriptors: sortDescriptors,
+            fetchOffset: 1,
+            fetchLimit: 1
+        )
+        .toBlocking(timeout: unitTestsTimeout)
+        .single()
+
+        XCTAssertEqual("ATC", result.first?.code)
+        XCTAssertEqual("HTC", offsetResult.first?.code)
+    }
 }
 
 struct TestCurrency: DatabaseModelObject {
@@ -125,7 +171,7 @@ struct TestWallet: DatabaseModelObject {
 struct TestAdvancedModel: DatabaseModelObject {
     static let entityName = "AdvancedModelCoreData"
     static let idColumnName = "customIdField"
-    
+
     var id: String { return customIdField }
     let customIdField: String
 }

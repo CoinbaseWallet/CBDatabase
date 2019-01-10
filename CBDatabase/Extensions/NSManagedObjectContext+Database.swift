@@ -11,9 +11,18 @@ extension NSManagedObjectContext {
     func fetch(
         entityName: String,
         predicate: NSPredicate? = nil,
-        sortDescriptors: [NSSortDescriptor]? = []
+        sortDescriptors: [NSSortDescriptor]? = [],
+        fetchOffset: Int? = nil,
+        fetchLimit: Int? = nil
     ) throws -> [NSManagedObject] {
-        let request = buildFetchRequest(entityName: entityName, predicate: predicate, sortDescriptors: sortDescriptors)
+        let request = buildFetchRequest(
+            entityName: entityName,
+            predicate: predicate,
+            sortDescriptors: sortDescriptors,
+            fetchOffset: fetchOffset,
+            fetchLimit: fetchLimit
+        )
+
         return try fetch(request)
     }
 
@@ -64,13 +73,23 @@ extension NSManagedObjectContext {
     private func buildFetchRequest(
         entityName: String,
         predicate: NSPredicate? = nil,
-        sortDescriptors: [NSSortDescriptor]? = []
+        sortDescriptors: [NSSortDescriptor]? = [],
+        fetchOffset: Int? = nil,
+        fetchLimit: Int? = nil
     ) -> NSFetchRequest<NSManagedObject> {
         assert(isBackgroundContext != Thread.isMainThread)
 
         let fetchRequest: NSFetchRequest<NSManagedObject> = NSFetchRequest(entityName: entityName)
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors
+
+        if let fetchLimit = fetchLimit {
+            fetchRequest.fetchLimit = fetchLimit
+        }
+
+        if let fetchOffset = fetchOffset {
+            fetchRequest.fetchOffset = fetchOffset
+        }
 
         return fetchRequest
     }
