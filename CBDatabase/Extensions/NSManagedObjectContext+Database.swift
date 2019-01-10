@@ -13,7 +13,6 @@ extension NSManagedObjectContext {
         predicate: NSPredicate? = nil,
         sortDescriptors: [NSSortDescriptor]? = [],
         fetchOffset: Int? = nil,
-        fetchBatchSize: Int? = nil,
         fetchLimit: Int? = nil
     ) throws -> [NSManagedObject] {
         let request = buildFetchRequest(
@@ -21,7 +20,6 @@ extension NSManagedObjectContext {
             predicate: predicate,
             sortDescriptors: sortDescriptors,
             fetchOffset: fetchOffset,
-            fetchBatchSize: fetchBatchSize,
             fetchLimit: fetchLimit
         )
 
@@ -77,7 +75,6 @@ extension NSManagedObjectContext {
         predicate: NSPredicate? = nil,
         sortDescriptors: [NSSortDescriptor]? = [],
         fetchOffset: Int? = nil,
-        fetchBatchSize: Int? = nil,
         fetchLimit: Int? = nil
     ) -> NSFetchRequest<NSManagedObject> {
         assert(isBackgroundContext != Thread.isMainThread)
@@ -88,10 +85,6 @@ extension NSManagedObjectContext {
 
         if let fetchLimit = fetchLimit {
             fetchRequest.fetchLimit = fetchLimit
-        }
-
-        if let fetchBatchSize = fetchBatchSize {
-            fetchRequest.fetchBatchSize = fetchBatchSize
         }
 
         if let fetchOffset = fetchOffset {

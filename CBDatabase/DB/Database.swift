@@ -107,11 +107,10 @@ public final class Database {
     /// Fetches objects from the data store.
     ///
     /// - Parameters:
-    ///     - predicate:        A predicate filtering the results of the fetch. If none is passed in all items of type T
-    ///                         are returned.
-    ///     - sortDescriptors: Sort descriptors inidicating the order the items are reutrn in.
+    ///     - predicate:       A predicate filtering the results of the fetch. If none is passed in all items of type T
+    ///                        are returned.
+    ///     - sortDescriptors: Sort descriptors indicating the order the items are reutrn in.
     ///     - fetchOffset:     The fetch offset of the fetch request.
-    ///     - fetchBatchSize:  The batch size of the objects specified in the fetch request.
     ///     - fetchLimit:      The fetch limit specifies the maximum number of objects that a request should return when
     ///                        executed.
     ///
@@ -120,7 +119,6 @@ public final class Database {
         predicate: NSPredicate? = nil,
         sortDescriptors: [NSSortDescriptor]? = [],
         fetchOffset: Int? = nil,
-        fetchBatchSize: Int? = nil,
         fetchLimit: Int? = nil
     ) -> Single<[T]> {
         return storage.perform(operation: .read) { context -> [T] in
@@ -129,7 +127,6 @@ public final class Database {
                 predicate: predicate,
                 sortDescriptors: sortDescriptors,
                 fetchOffset: fetchOffset,
-                fetchBatchSize: fetchBatchSize,
                 fetchLimit: fetchLimit
             )
 
