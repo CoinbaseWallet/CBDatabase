@@ -69,7 +69,12 @@ final class DatabaseStorage {
         let storeWALFile = "\(storeFile)-wal"
 
         [storeFile, storeSHMFile, storeWALFile].forEach { filename in
-            guard let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename) else { return }
+            guard
+                let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
+                FileManager.default.fileExists(atPath: fileURL.path)
+            else {
+                return
+            }
 
             try? FileManager.default.removeItem(at: fileURL)
         }
