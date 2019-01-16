@@ -71,7 +71,7 @@ final class DatabaseStorage {
         [storeFile, storeSHMFile, storeWALFile].forEach { filename in
             guard
                 let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
-                FileManager.default.fileExists(atPath: fileURL.absoluteString)
+                FileManager.default.fileExists(atPath: fileURL.path)
             else {
                 return
             }
