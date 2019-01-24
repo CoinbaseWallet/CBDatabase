@@ -28,6 +28,7 @@
 		E75CDDEB217D1AF700DDC4C8 /* TestDatabase.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */; };
 		E7887E7121854EA400ED5C82 /* DBDataTypeWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */; };
 		E7887E732185858B00ED5C82 /* DBDataTypeEquality.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */; };
+		E7D545D421FA59C60004567D /* BigIntDBWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 		E75CDDDA217D185500DDC4C8 /* DatabaseStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseStorage.swift; sourceTree = "<group>"; };
 		E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBDataTypeWrapper.swift; sourceTree = "<group>"; };
 		E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBDataTypeEquality.swift; sourceTree = "<group>"; };
+		E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntDBWrapper.swift; sourceTree = "<group>"; };
 		F51598B391BD6442BBA1C150 /* Pods-Databases.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Databases.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Databases/Pods-Databases.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -148,13 +150,14 @@
 		E75CDDAA217D178D00DDC4C8 /* CBDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				E7887E6F21854E8600ED5C82 /* Protocols */,
 				E75CDDD3217D185500DDC4C8 /* DB */,
 				E75CDDC3217D185500DDC4C8 /* Decoders */,
 				E75CDDD0217D185500DDC4C8 /* Errors */,
 				E75CDDC6217D185500DDC4C8 /* Extensions */,
 				E75CDDCA217D185500DDC4C8 /* Models */,
 				E75CDDC2217D183100DDC4C8 /* Module */,
+				E7887E6F21854E8600ED5C82 /* Protocols */,
+				E7D545D221FA59A30004567D /* Wrappers */,
 			);
 			path = CBDatabase;
 			sourceTree = "<group>";
@@ -228,11 +231,19 @@
 		E7887E6F21854E8600ED5C82 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
-				E75CDDD9217D185500DDC4C8 /* DatabaseModelObject.swift */,
-				E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */,
 				E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */,
+				E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */,
+				E75CDDD9217D185500DDC4C8 /* DatabaseModelObject.swift */,
 			);
 			path = Protocols;
+			sourceTree = "<group>";
+		};
+		E7D545D221FA59A30004567D /* Wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */,
+			);
+			path = Wrappers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -353,12 +364,12 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-CBDatabaseTests/Pods-CBDatabaseTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/Quick/Quick.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
-				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
+				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
@@ -366,12 +377,12 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -433,6 +444,7 @@
 				E75CDDDB217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift in Sources */,
 				E75CDDE4217D185500DDC4C8 /* DatabaseDecoderError.swift in Sources */,
 				E7887E7121854EA400ED5C82 /* DBDataTypeWrapper.swift in Sources */,
+				E7D545D421FA59C60004567D /* BigIntDBWrapper.swift in Sources */,
 				E75CDDE5217D185500DDC4C8 /* DatabaseError.swift in Sources */,
 				E75CDDDC217D185500DDC4C8 /* DatabaseDecoder.swift in Sources */,
 				E75CDDDE217D185500DDC4C8 /* NSManagedObject+Database.swift in Sources */,

@@ -199,32 +199,3 @@ struct TestAdvancedModel: DatabaseModelObject {
     var id: String { return customIdField }
     let customIdField: String
 }
-
-public final class TestBigIntDBWrapper: NSObject, DBDataTypeWrapper {
-    private let model: BigInt
-
-    public var asModel: Any? { return model }
-
-    public required init?(model: Any) {
-        guard let bigIntModel = model as? BigInt else { return nil }
-        self.model = bigIntModel
-    }
-
-    public required init?(coder aDecoder: NSCoder) {
-        guard
-            let value = aDecoder.decodeObject(forKey: "model") as? String,
-            let model = BigInt(value)
-        else { return nil }
-
-        self.model = model
-    }
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(String(model), forKey: "model")
-    }
-
-    public func isEqual(to otherWrapper: Any) -> Bool {
-        guard let otherWrapper = otherWrapper as? TestBigIntDBWrapper else { return false }
-        return model == otherWrapper.model
-    }
-}
