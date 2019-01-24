@@ -26,3 +26,18 @@ DerivedData
 *.xcscmblueprint
 *.gcno
 *.gcda
+
+# Carthage
+/Carthage/Checkouts
+Carthage/Build/Mac
+Carthage/Build/tvOS
+Carthage/Build/watchOS
+Carthage/Build/.*.version
+
+# AppCode
+/.idea
+
+# Ruby/Node
+vendor/bundle
+.bundle/
+node_modules/
