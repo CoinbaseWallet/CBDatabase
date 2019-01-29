@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Coinbase Inc. See LICENSE
+// Copyright (c) 2017-2019 Coinbase Inc. See LICENSE
 
 import CoreData
 import RxSwift
@@ -18,6 +18,9 @@ final class DatabaseStorage {
 
     /// CoreData's managed object context
     let context: NSManagedObjectContext
+
+    /// Determine whether the database has been manually destroyed and should not be used anymore
+    private(set) var isDestroyed: Bool = false
 
     init(storage: DatabaseStorageType, modelURL: URL, storeName: String) {
         self.storeName = storeName
@@ -40,6 +43,10 @@ final class DatabaseStorage {
 
             let work = {
                 context.performAndWait {
+                    if strongSelf.isDestroyed {
+                        return single(.error(DatabaseError.databaseDestroyed))
+                    }
+
                     do {
                         let result = try work(context)
                         context.saveChangesIfNeeded()
@@ -64,19 +71,27 @@ final class DatabaseStorage {
 
     /// Delete sqlite file
     func destroy() {
-        let storeFile = "\(storeName).sqlite"
-        let storeSHMFile = "\(storeFile)-shm"
-        let storeWALFile = "\(storeFile)-wal"
-
-        [storeFile, storeSHMFile, storeWALFile].forEach { filename in
-            guard
-                let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
-                FileManager.default.fileExists(atPath: fileURL.path)
-            else {
+        multiReadSingleWriteQueue.sync(flags: .barrier) {
+            if self.isDestroyed {
                 return
             }
 
-            try? FileManager.default.removeItem(at: fileURL)
+            self.isDestroyed = true
+
+            let storeFile = "\(storeName).sqlite"
+            let storeSHMFile = "\(storeFile)-shm"
+            let storeWALFile = "\(storeFile)-wal"
+
+            [storeFile, storeSHMFile, storeWALFile].forEach { filename in
+                guard
+                    let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
+                    FileManager.default.fileExists(atPath: fileURL.path)
+                else {
+                    return
+                }
+
+                try? FileManager.default.removeItem(at: fileURL)
+            }
         }
     }
 
