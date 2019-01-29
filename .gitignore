@@ -41,3 +41,4 @@ Carthage/Build/.*.version
 vendor/bundle
 .bundle/
 node_modules/
+*.xcbkptlist

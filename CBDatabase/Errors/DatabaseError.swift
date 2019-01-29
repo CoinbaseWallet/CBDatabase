@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Coinbase Inc. See LICENSE
+// Copyright (c) 2017-2019 Coinbase Inc. See LICENSE
 
 import Foundation
 
@@ -12,4 +12,7 @@ public enum DatabaseError: Error {
 
     /// Error thrown when an invalid model is encountered during observation
     case unableToObserveModel
+
+    /// Error thrown whenever an add/update/query operation is fired when DB is in `destroyed` state
+    case databaseDestroyed
 }

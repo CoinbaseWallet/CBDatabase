@@ -131,7 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				E75CDDAA217D178D00DDC4C8 /* CBDatabase */,
-				E75CDDB5217D178D00DDC4C8 /* DatabasesTests */,
+				E75CDDB5217D178D00DDC4C8 /* CBDatabaseTests */,
 				A470C911736EC167645DB406 /* Frameworks */,
 				C8BCF9864743F2156E0C48D0 /* Pods */,
 				E75CDDA9217D178D00DDC4C8 /* Products */,
@@ -162,14 +162,14 @@
 			path = CBDatabase;
 			sourceTree = "<group>";
 		};
-		E75CDDB5217D178D00DDC4C8 /* DatabasesTests */ = {
+		E75CDDB5217D178D00DDC4C8 /* CBDatabaseTests */ = {
 			isa = PBXGroup;
 			children = (
 				E75CDDB6217D178D00DDC4C8 /* DatabasesTests.swift */,
 				E75CDDB8217D178D00DDC4C8 /* Info.plist */,
 				E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */,
 			);
-			path = DatabasesTests;
+			path = CBDatabaseTests;
 			sourceTree = "<group>";
 		};
 		E75CDDC2217D183100DDC4C8 /* Module */ = {
@@ -659,7 +659,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = DatabasesTests/Info.plist;
+				INFOPLIST_FILE = CBDatabaseTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -678,7 +678,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = DatabasesTests/Info.plist;
+				INFOPLIST_FILE = CBDatabaseTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

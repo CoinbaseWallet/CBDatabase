@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2019 Coinbase Inc. See LICENSE
+
 import Foundation
 
 /// This protocol is used to compare custom data types. `Equality` cannot be used since it has `Self` requirement.

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Coinbase Inc. See LICENSE
+// Copyright (c) 2017-2019 Coinbase Inc. See LICENSE
 
 import BigInt
 @testable import CBDatabase
@@ -157,6 +157,32 @@ class DatabasesTests: XCTestCase {
             .toBlocking(timeout: unitTestsTimeout)
             .single()
         XCTAssertEqual("ATC", result?.code)
+    }
+
+    func testDestroy() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        _ = try database.addOrUpdate(TestCurrency(code: "HTC", name: "HISHCOIN"))
+            .toBlocking(timeout: unitTestsTimeout).single()
+
+        let sortDescriptors = [NSSortDescriptor(key: "code", ascending: false)]
+        let result: TestCurrency? = try database.fetchOne(sortDescriptors: sortDescriptors)
+            .toBlocking(timeout: unitTestsTimeout)
+            .single()
+
+        XCTAssertEqual("HTC", result?.code)
+
+        let result2: TestCurrency? = try database.addOrUpdate(TestCurrency(code: "HTC", name: "HISHCOIN2"))
+            .toBlocking(timeout: unitTestsTimeout).single()
+
+        XCTAssertEqual("HISHCOIN2", result2?.name)
+
+        database.destroy()
+
+        let result3: TestCurrency? = try database.addOrUpdate(TestCurrency(code: "HTC", name: "HISHCOIN3"))
+            .toBlocking(timeout: unitTestsTimeout).single()
+
+        XCTAssertNil(result3)
     }
 }
 

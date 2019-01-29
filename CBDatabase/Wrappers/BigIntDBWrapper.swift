@@ -18,7 +18,7 @@ public final class BigIntDBWrapper: NSObject, DBDataTypeWrapper {
         guard
             let value = aDecoder.decodeObject(forKey: "model") as? String,
             let model = BigInt(value)
-            else { return nil }
+        else { return nil }
 
         self.model = model
     }
