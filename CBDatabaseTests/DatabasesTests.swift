@@ -184,6 +184,34 @@ class DatabasesTests: XCTestCase {
 
         XCTAssertNil(result3)
     }
+
+    func testBatchUpdate() throws {
+        let database = Database(type: .memory, modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+        ]
+
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let updatedCurrencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN2"),
+            TestCurrency(code: "HTC", name: "HISHCOIN2"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN2"),
+        ]
+
+        _ = try database.update(updatedCurrencies).toBlocking(timeout: unitTestsTimeout).single()
+
+        let fetchedCurrencies: [TestCurrency] = try database.fetch(
+            sortDescriptors: [NSSortDescriptor(key: "code", ascending: true)]
+        )
+        .toBlocking(timeout: unitTestsTimeout)
+        .single()
+
+        XCTAssertEqual(updatedCurrencies, fetchedCurrencies)
+    }
 }
 
 struct TestCurrency: DatabaseModelObject {

@@ -87,19 +87,31 @@ public final class Database {
 
     /// Updates the object in the data store.
     ///
-    /// - Parameter object: The object to update in the database.
+    /// - Parameter model: The object to update in the database.
     ///
     /// - Returns: A Single representing whether the update succeeded. Succeeds is false if the object is not already
     ///     in the database.
-    public func update<T: DatabaseModelObject>(_ object: T) -> Single<T?> {
-        return storage
-            .perform(operation: .write) { context -> T? in
-                if let managedObject = try context.fetch(T.self, identifier: object.id) {
-                    object.configure(with: managedObject)
-                    return object
-                }
+    public func update<T: DatabaseModelObject>(_ model: T) -> Single<T?> {
+        return update([model]).map { $0?.first }
+    }
 
-                return nil
+    /// Updates the objects in the datastore
+    ///
+    /// - Parameter models: The objects to update in the database
+    ///
+    /// - Returns: A Single representing whether the update succeeded. Succeeds is false if the object is not already
+    ///     in the database.
+    public func update<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
+        return storage
+            .perform(operation: .write) { context -> [T] in
+                return try models.compactMap { model in
+                    if let managedObject = try context.fetch(T.self, identifier: model.id) {
+                        model.configure(with: managedObject)
+                        return model
+                    }
+
+                    return nil
+                }
             }
             .catchErrorJustReturn(nil)
     }
