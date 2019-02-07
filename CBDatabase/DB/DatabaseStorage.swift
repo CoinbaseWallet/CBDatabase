@@ -12,8 +12,9 @@ final class DatabaseStorage {
     private let storeName: String
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let multiReadSingleWriteQueue = DispatchQueue(
-        label: "com.wallet.databases.multiWriteSingleReadQueue",
-        qos: .userInitiated
+        label: "CBDatabase.DatabaseStorage.multiWriteSingleReadQueue",
+        qos: .userInitiated,
+        attributes: .concurrent
     )
 
     /// CoreData's managed object context
