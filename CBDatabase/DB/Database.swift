@@ -301,8 +301,6 @@ public final class Database {
                     "\(refreshedObjects.count) refresh(s)",
                 ]
 
-                print("[databases]: [\(T.entityName)] \(pieces.joined(separator: ", "))")
-
                 return update
             }
             .filter { $0 != nil }
