@@ -3,6 +3,7 @@
 import CoreData
 import RxCocoa
 import RxSwift
+import os.log
 
 public final class Database {
     private let concurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
@@ -300,6 +301,14 @@ public final class Database {
                     "\(deletedObjects.count) delete(s)",
                     "\(refreshedObjects.count) refresh(s)",
                 ]
+
+                os_log(
+                    "[%@] %@",
+                    log: OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "Databases"),
+                    type: .debug,
+                    T.entityName,
+                    pieces.joined(separator: ", ")
+                )
 
                 return update
             }
