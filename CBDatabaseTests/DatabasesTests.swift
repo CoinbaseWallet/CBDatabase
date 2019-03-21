@@ -11,13 +11,13 @@ class DatabasesTests: XCTestCase {
     let dbURL = Bundle(for: DatabasesTests.self).url(forResource: "TestDatabase", withExtension: "momd")!
 
     func testEmptyCount() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
         let count = try database.count(for: TestCurrency.self).toBlocking(timeout: unitTestsTimeout).single()
         XCTAssertEqual(0, count)
     }
 
     func testCountWithRecords() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         var count = try database.count(for: TestCurrency.self).toBlocking(timeout: unitTestsTimeout).single()
         XCTAssertEqual(0, count)
@@ -35,7 +35,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testDataTypeWrapper() throws {
-        let database = Database(type: .sqlite(nil), modelURL: dbURL)
+        let database = try Database(type: .sqlite(nil), modelURL: dbURL)
         let expectedWallet = TestWallet(id: UUID().uuidString, name: "wallet 1", balance: BigInt(420))
 
         _ = try database.add(expectedWallet).toBlocking(timeout: unitTestsTimeout).single()
@@ -64,7 +64,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testAdvancedModel() throws {
-        let database = Database(type: .sqlite(nil), modelURL: dbURL)
+        let database = try Database(type: .sqlite(nil), modelURL: dbURL)
         let expectedValue = TestAdvancedModel(customIdField: UUID().uuidString)
 
         _ = try database.add(expectedValue).toBlocking(timeout: unitTestsTimeout).single()
@@ -89,7 +89,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchLimit() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         let currencies = [
             TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
@@ -107,7 +107,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchOffset() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -136,7 +136,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchOne() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -160,7 +160,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testDestroy() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         _ = try database.addOrUpdate(TestCurrency(code: "HTC", name: "HISHCOIN"))
             .toBlocking(timeout: unitTestsTimeout).single()
@@ -186,7 +186,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testBatchUpdate() throws {
-        let database = Database(type: .memory, modelURL: dbURL)
+        let database = try Database(type: .memory, modelURL: dbURL)
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -211,6 +211,31 @@ class DatabasesTests: XCTestCase {
         .single()
 
         XCTAssertEqual(updatedCurrencies, fetchedCurrencies)
+    }
+
+    func testDiskSaveAndReset() throws {
+        let database = try Database(modelURL: dbURL)
+
+        let currencies = [
+            TestCurrency(code: "ATC", name: "ANDREWCOIN"),
+            TestCurrency(code: "HTC", name: "HISHCOIN"),
+            TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
+        ]
+
+        // insert data and verify
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+        var savedCurrencies: [TestCurrency] = try database.fetch().toBlocking(timeout: unitTestsTimeout).single()
+        XCTAssertEqual(savedCurrencies.count, 3)
+
+        // Reset database and verify
+        try database.reset()
+        savedCurrencies = try database.fetch().toBlocking(timeout: unitTestsTimeout).single()
+        XCTAssertEqual(savedCurrencies.count, 0)
+
+        // Reinsert data and verify
+        _ = try database.add(currencies).toBlocking(timeout: unitTestsTimeout).single()
+        savedCurrencies = try database.fetch().toBlocking(timeout: unitTestsTimeout).single()
+        XCTAssertEqual(savedCurrencies.count, 3)
     }
 }
 
