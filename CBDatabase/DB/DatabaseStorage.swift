@@ -9,6 +9,8 @@ final class DatabaseStorage {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
     }()
 
+    private let storage: DatabaseStorageType
+    private let modelURL: URL
     private let storeName: String
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let multiReadSingleWriteQueue = DispatchQueue(
@@ -18,14 +20,16 @@ final class DatabaseStorage {
     )
 
     /// CoreData's managed object context
-    let context: NSManagedObjectContext
+    private(set) var context: NSManagedObjectContext
 
     /// Determine whether the database has been manually destroyed and should not be used anymore
     private(set) var isDestroyed: Bool = false
 
-    init(storage: DatabaseStorageType, modelURL: URL, storeName: String) {
+    init(storage: DatabaseStorageType, modelURL: URL, storeName: String) throws {
         self.storeName = storeName
-        context = DatabaseStorage.createManagedObjectContext(for: storage, modelURL: modelURL, storeName: storeName)
+        self.modelURL = modelURL
+        self.storage = storage
+        context = try DatabaseStorage.createManagedObjectContext(for: storage, modelURL: modelURL, storeName: storeName)
     }
 
     /// Perform database operation in private concurrent queue.
@@ -70,7 +74,7 @@ final class DatabaseStorage {
         .subscribeOn(scheduler)
     }
 
-    /// Delete sqlite file
+    /// Delete sqlite file and marks it as destroyed. All read/write operations will fail
     func destroy() {
         multiReadSingleWriteQueue.sync(flags: .barrier) {
             if self.isDestroyed {
@@ -78,43 +82,56 @@ final class DatabaseStorage {
             }
 
             self.isDestroyed = true
+            self.deleteDatabaseFromDisk()
+        }
+    }
 
-            let storeFile = "\(storeName).sqlite"
-            let storeSHMFile = "\(storeFile)-shm"
-            let storeWALFile = "\(storeFile)-wal"
-
-            [storeFile, storeSHMFile, storeWALFile].forEach { filename in
-                guard
-                    let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
-                    FileManager.default.fileExists(atPath: fileURL.path)
-                else {
-                    return
-                }
-
-                try? FileManager.default.removeItem(at: fileURL)
+    /// Delete the current database sqlite file.
+    func reset() throws {
+        try multiReadSingleWriteQueue.sync(flags: .barrier) {
+            if self.isDestroyed {
+                return
             }
+
+            self.deleteDatabaseFromDisk()
+            self.context = try DatabaseStorage.createManagedObjectContext(
+                for: storage,
+                modelURL: modelURL,
+                storeName: storeName
+            )
         }
     }
 
     // MARK: Private helpers
 
+    private func deleteDatabaseFromDisk() {
+        let storeFile = "\(storeName).sqlite"
+        let storeSHMFile = "\(storeFile)-shm"
+        let storeWALFile = "\(storeFile)-wal"
+
+        [storeFile, storeSHMFile, storeWALFile].forEach { filename in
+            guard
+                let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
+                FileManager.default.fileExists(atPath: fileURL.path)
+            else {
+                return
+            }
+
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+    }
+
     private static func createManagedObjectContext(
         for storage: DatabaseStorageType,
         modelURL: URL,
         storeName: String
-    ) -> NSManagedObjectContext {
-        guard let mom = NSManagedObjectModel(contentsOf: modelURL) else { fatalError("Unable to setup database") }
-
-        let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+    ) throws -> NSManagedObjectContext {
+        guard let mom = NSManagedObjectModel(contentsOf: modelURL) else {
+            throw DatabaseError.unableToCreateManagedObjectModel
+        }
 
         let storeType: String
         let storeURL: URL?
-        let options: [AnyHashable: Any] = [
-            NSMigratePersistentStoresAutomaticallyOption: true,
-            NSInferMappingModelAutomaticallyOption: true,
-        ]
 
         switch storage {
         case .memory:
@@ -127,7 +144,7 @@ final class DatabaseStorage {
                 storeURL = url
             } else if let docURL = DatabaseStorage.docURL {
                 if !FileManager.default.fileExists(atPath: docURL.absoluteString) {
-                    try? FileManager.default.createDirectory(
+                    try FileManager.default.createDirectory(
                         at: docURL,
                         withIntermediateDirectories: true,
                         attributes: nil
@@ -136,16 +153,20 @@ final class DatabaseStorage {
 
                 storeURL = docURL.appendingPathComponent("\(storeName).sqlite")
             } else {
-                fatalError("Unable to setup database")
+                throw DatabaseError.unableToSetupDatabase
             }
         }
 
-        do {
-            managedObjectContext.persistentStoreCoordinator = psc
-            try psc.addPersistentStore(ofType: storeType, configurationName: nil, at: storeURL, options: options)
-        } catch let err {
-            fatalError("Error setting up database: \(err)")
-        }
+        let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
+        let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        let options: [AnyHashable: Any] = [
+            NSMigratePersistentStoresAutomaticallyOption: true,
+            NSInferMappingModelAutomaticallyOption: true,
+        ]
+
+        managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        managedObjectContext.persistentStoreCoordinator = psc
+        try psc.addPersistentStore(ofType: storeType, configurationName: nil, at: storeURL, options: options)
 
         return managedObjectContext
     }

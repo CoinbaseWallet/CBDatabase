@@ -15,4 +15,10 @@ public enum DatabaseError: Error {
 
     /// Error thrown whenever an add/update/query operation is fired when DB is in `destroyed` state
     case databaseDestroyed
+
+    /// Thrown when managed object model cannot be created during DB setup
+    case unableToCreateManagedObjectModel
+
+    /// Thrown when database setup fails
+    case unableToSetupDatabase
 }

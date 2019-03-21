@@ -10,8 +10,8 @@ public final class Database {
     private let disposeBag = DisposeBag()
     private let storage: DatabaseStorage
 
-    public init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") {
-        storage = DatabaseStorage(storage: type, modelURL: modelURL, storeName: storeName)
+    public init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") throws {
+        storage = try DatabaseStorage(storage: type, modelURL: modelURL, storeName: storeName)
     }
 
     /// Adds a new model to the database.
@@ -105,7 +105,7 @@ public final class Database {
     public func update<T: DatabaseModelObject>(_ models: [T]) -> Single<[T]?> {
         return storage
             .perform(operation: .write) { context -> [T] in
-                return try models.compactMap { model in
+                try models.compactMap { model in
                     if let managedObject = try context.fetch(T.self, identifier: model.id) {
                         model.configure(with: managedObject)
                         return model
@@ -320,8 +320,13 @@ public final class Database {
             }
     }
 
-    /// Deletes local sqlite file
+    /// Delete sqlite file and mark it as destroyed. All subsequent read/write operations will fail with and exception.
     public func destroy() {
         storage.destroy()
+    }
+
+    /// Completely clear the database.
+    public func reset() throws {
+        try storage.reset()
     }
 }
