@@ -3,18 +3,11 @@
 import CoreData
 import RxSwift
 
-/// Database storage
-final class DatabaseStorage {
-    private static var docURL: URL? = {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
-    }()
-
-    private let storage: DatabaseStorageType
-    private let modelURL: URL
-    private let storeName: String
+final class CoreDataMemoryStorage: DatabaseStorage {
+    private let options: MemoryDatabaseOptions
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let multiReadSingleWriteQueue = DispatchQueue(
-        label: "CBDatabase.DatabaseStorage.multiWriteSingleReadQueue",
+        label: "CBDatabase.MemoryStorage.multiWriteSingleReadQueue",
         qos: .userInitiated,
         attributes: .concurrent
     )
@@ -25,11 +18,9 @@ final class DatabaseStorage {
     /// Determine whether the database has been manually destroyed and should not be used anymore
     private(set) var isDestroyed: Bool = false
 
-    init(storage: DatabaseStorageType, modelURL: URL, storeName: String) throws {
-        self.storeName = storeName
-        self.modelURL = modelURL
-        self.storage = storage
-        context = try DatabaseStorage.createManagedObjectContext(for: storage, modelURL: modelURL, storeName: storeName)
+    init(options: MemoryDatabaseOptions) throws {
+        self.options = options
+        context = try CoreDataMemoryStorage.createManagedObjectContext(options: options)
     }
 
     /// Perform database operation in private concurrent queue.
@@ -82,7 +73,6 @@ final class DatabaseStorage {
             }
 
             self.isDestroyed = true
-            self.deleteDatabaseFromDisk()
         }
     }
 
@@ -93,68 +83,18 @@ final class DatabaseStorage {
                 return
             }
 
-            self.deleteDatabaseFromDisk()
-            self.context = try DatabaseStorage.createManagedObjectContext(
-                for: storage,
-                modelURL: modelURL,
-                storeName: storeName
-            )
+            self.context = try CoreDataMemoryStorage.createManagedObjectContext(options: self.options)
         }
     }
 
     // MARK: Private helpers
 
-    private func deleteDatabaseFromDisk() {
-        let storeFile = "\(storeName).sqlite"
-        let storeSHMFile = "\(storeFile)-shm"
-        let storeWALFile = "\(storeFile)-wal"
-
-        [storeFile, storeSHMFile, storeWALFile].forEach { filename in
-            guard
-                let fileURL = DatabaseStorage.docURL?.appendingPathComponent(filename),
-                FileManager.default.fileExists(atPath: fileURL.path)
-            else {
-                return
-            }
-
-            try? FileManager.default.removeItem(at: fileURL)
-        }
-    }
-
-    private static func createManagedObjectContext(
-        for storage: DatabaseStorageType,
-        modelURL: URL,
-        storeName: String
-    ) throws -> NSManagedObjectContext {
-        guard let mom = NSManagedObjectModel(contentsOf: modelURL) else {
-            throw DatabaseError.unableToCreateManagedObjectModel
-        }
-
-        let storeType: String
-        let storeURL: URL?
-
-        switch storage {
-        case .memory:
-            storeType = NSInMemoryStoreType
-            storeURL = nil
-        case let .sqlite(url):
-            storeType = NSSQLiteStoreType
-
-            if let url = url {
-                storeURL = url
-            } else if let docURL = DatabaseStorage.docURL {
-                if !FileManager.default.fileExists(atPath: docURL.absoluteString) {
-                    try FileManager.default.createDirectory(
-                        at: docURL,
-                        withIntermediateDirectories: true,
-                        attributes: nil
-                    )
-                }
-
-                storeURL = docURL.appendingPathComponent("\(storeName).sqlite")
-            } else {
-                throw DatabaseError.unableToSetupDatabase
-            }
+    private static func createManagedObjectContext(options: MemoryDatabaseOptions) throws -> NSManagedObjectContext {
+        guard
+            let momURL = options.dataModelBundle.url(forResource: options.dbSchemaName, withExtension: "momd"),
+            let mom = NSManagedObjectModel(contentsOf: momURL)
+        else {
+            throw DatabaseError.unableToSetupDatabase
         }
 
         let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
@@ -166,7 +106,8 @@ final class DatabaseStorage {
 
         managedObjectContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         managedObjectContext.persistentStoreCoordinator = psc
-        try psc.addPersistentStore(ofType: storeType, configurationName: nil, at: storeURL, options: options)
+
+        try psc.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: options)
 
         return managedObjectContext
     }

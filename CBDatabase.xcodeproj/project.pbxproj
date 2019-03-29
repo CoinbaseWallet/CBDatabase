@@ -19,7 +19,6 @@
 		E75CDDDF217D185500DDC4C8 /* NSManagedObjectContext+Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDC9217D185500DDC4C8 /* NSManagedObjectContext+Database.swift */; };
 		E75CDDE0217D185500DDC4C8 /* DatabaseOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */; };
 		E75CDDE1217D185500DDC4C8 /* DatabaseUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */; };
-		E75CDDE2217D185500DDC4C8 /* DatabaseType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */; };
 		E75CDDE4217D185500DDC4C8 /* DatabaseDecoderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */; };
 		E75CDDE5217D185500DDC4C8 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */; };
 		E75CDDE7217D185500DDC4C8 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75CDDD5217D185500DDC4C8 /* Database.swift */; };
@@ -29,6 +28,17 @@
 		E7887E7121854EA400ED5C82 /* DBDataTypeWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */; };
 		E7887E732185858B00ED5C82 /* DBDataTypeEquality.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */; };
 		E7D545D421FA59C60004567D /* BigIntDBWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */; };
+		E7D6A0F3224C207000404A07 /* ProgressiveMigrationDB.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A0F1224C207000404A07 /* ProgressiveMigrationDB.xcdatamodeld */; };
+		E7D6A0FE224D623500404A07 /* DiskDatabaseOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A0FD224D623500404A07 /* DiskDatabaseOptions.swift */; };
+		E7D6A100224D628000404A07 /* CoreDataDiskStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A0FF224D628000404A07 /* CoreDataDiskStorage.swift */; };
+		E7D6A102224D629000404A07 /* CoreDataMemoryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A101224D629000404A07 /* CoreDataMemoryStorage.swift */; };
+		E7D6A104224D636600404A07 /* MemoryDatabaseOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A103224D636600404A07 /* MemoryDatabaseOptions.swift */; };
+		E7D6A106224D7D6000404A07 /* MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A105224D7D6000404A07 /* MigrationTests.swift */; };
+		E7D6A10B224D809700404A07 /* progressivedb.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = E7D6A108224D809700404A07 /* progressivedb.sqlite */; };
+		E7D6A10C224D809700404A07 /* progressivedb.sqlite-wal in Resources */ = {isa = PBXBuildFile; fileRef = E7D6A109224D809700404A07 /* progressivedb.sqlite-wal */; };
+		E7D6A10D224D809700404A07 /* progressivedb.sqlite-shm in Resources */ = {isa = PBXBuildFile; fileRef = E7D6A10A224D809700404A07 /* progressivedb.sqlite-shm */; };
+		E7D6A112224D947F00404A07 /* ProgressiveV1toV2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A111224D947F00404A07 /* ProgressiveV1toV2.xcmappingmodel */; };
+		E7D6A114224D949D00404A07 /* ProgressiveV2toV3.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = E7D6A113224D949D00404A07 /* ProgressiveV2toV3.xcmappingmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +76,6 @@
 		E75CDDC9217D185500DDC4C8 /* NSManagedObjectContext+Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Database.swift"; sourceTree = "<group>"; };
 		E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseOperation.swift; sourceTree = "<group>"; };
 		E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseUpdate.swift; sourceTree = "<group>"; };
-		E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseType.swift; sourceTree = "<group>"; };
 		E75CDDD1217D185500DDC4C8 /* DatabaseDecoderError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseDecoderError.swift; sourceTree = "<group>"; };
 		E75CDDD2217D185500DDC4C8 /* DatabaseError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
 		E75CDDD5217D185500DDC4C8 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -77,6 +86,20 @@
 		E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBDataTypeWrapper.swift; sourceTree = "<group>"; };
 		E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBDataTypeEquality.swift; sourceTree = "<group>"; };
 		E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntDBWrapper.swift; sourceTree = "<group>"; };
+		E7D6A0F2224C207000404A07 /* ProgressiveMigrationDB.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProgressiveMigrationDB.xcdatamodel; sourceTree = "<group>"; };
+		E7D6A0F4224C211700404A07 /* v2db.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = v2db.xcdatamodel; sourceTree = "<group>"; };
+		E7D6A0FD224D623500404A07 /* DiskDatabaseOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskDatabaseOptions.swift; sourceTree = "<group>"; };
+		E7D6A0FF224D628000404A07 /* CoreDataDiskStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataDiskStorage.swift; sourceTree = "<group>"; };
+		E7D6A101224D629000404A07 /* CoreDataMemoryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataMemoryStorage.swift; sourceTree = "<group>"; };
+		E7D6A103224D636600404A07 /* MemoryDatabaseOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryDatabaseOptions.swift; sourceTree = "<group>"; };
+		E7D6A105224D7D6000404A07 /* MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationTests.swift; sourceTree = "<group>"; };
+		E7D6A108224D809700404A07 /* progressivedb.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = progressivedb.sqlite; sourceTree = "<group>"; };
+		E7D6A109224D809700404A07 /* progressivedb.sqlite-wal */ = {isa = PBXFileReference; lastKnownFileType = file; path = "progressivedb.sqlite-wal"; sourceTree = "<group>"; };
+		E7D6A10A224D809700404A07 /* progressivedb.sqlite-shm */ = {isa = PBXFileReference; lastKnownFileType = file; path = "progressivedb.sqlite-shm"; sourceTree = "<group>"; };
+		E7D6A110224D932C00404A07 /* v3db.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = v3db.xcdatamodel; sourceTree = "<group>"; };
+		E7D6A111224D947F00404A07 /* ProgressiveV1toV2.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = ProgressiveV1toV2.xcmappingmodel; sourceTree = "<group>"; };
+		E7D6A113224D949D00404A07 /* ProgressiveV2toV3.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = ProgressiveV2toV3.xcmappingmodel; sourceTree = "<group>"; };
+		E7D6A115224D94F600404A07 /* v4db.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = v4db.xcdatamodel; sourceTree = "<group>"; };
 		F51598B391BD6442BBA1C150 /* Pods-Databases.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Databases.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Databases/Pods-Databases.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,8 +188,13 @@
 		E75CDDB5217D178D00DDC4C8 /* CBDatabaseTests */ = {
 			isa = PBXGroup;
 			children = (
+				E7D6A107224D807E00404A07 /* progressivedb_v1 */,
 				E75CDDB6217D178D00DDC4C8 /* DatabasesTests.swift */,
 				E75CDDB8217D178D00DDC4C8 /* Info.plist */,
+				E7D6A105224D7D6000404A07 /* MigrationTests.swift */,
+				E7D6A0F1224C207000404A07 /* ProgressiveMigrationDB.xcdatamodeld */,
+				E7D6A111224D947F00404A07 /* ProgressiveV1toV2.xcmappingmodel */,
+				E7D6A113224D949D00404A07 /* ProgressiveV2toV3.xcmappingmodel */,
 				E75CDDD6217D185500DDC4C8 /* TestDatabase.xcdatamodeld */,
 			);
 			path = CBDatabaseTests;
@@ -204,8 +232,9 @@
 			isa = PBXGroup;
 			children = (
 				E75CDDCB217D185500DDC4C8 /* DatabaseOperation.swift */,
-				E75CDDCD217D185500DDC4C8 /* DatabaseType.swift */,
 				E75CDDCC217D185500DDC4C8 /* DatabaseUpdate.swift */,
+				E7D6A0FD224D623500404A07 /* DiskDatabaseOptions.swift */,
+				E7D6A103224D636600404A07 /* MemoryDatabaseOptions.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -222,8 +251,9 @@
 		E75CDDD3217D185500DDC4C8 /* DB */ = {
 			isa = PBXGroup;
 			children = (
+				E7D6A0FF224D628000404A07 /* CoreDataDiskStorage.swift */,
+				E7D6A101224D629000404A07 /* CoreDataMemoryStorage.swift */,
 				E75CDDD5217D185500DDC4C8 /* Database.swift */,
-				E75CDDDA217D185500DDC4C8 /* DatabaseStorage.swift */,
 			);
 			path = DB;
 			sourceTree = "<group>";
@@ -234,6 +264,7 @@
 				E7887E722185858B00ED5C82 /* DBDataTypeEquality.swift */,
 				E7887E7021854EA400ED5C82 /* DBDataTypeWrapper.swift */,
 				E75CDDD9217D185500DDC4C8 /* DatabaseModelObject.swift */,
+				E75CDDDA217D185500DDC4C8 /* DatabaseStorage.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -244,6 +275,16 @@
 				E7D545D321FA59C60004567D /* BigIntDBWrapper.swift */,
 			);
 			path = Wrappers;
+			sourceTree = "<group>";
+		};
+		E7D6A107224D807E00404A07 /* progressivedb_v1 */ = {
+			isa = PBXGroup;
+			children = (
+				E7D6A108224D809700404A07 /* progressivedb.sqlite */,
+				E7D6A10A224D809700404A07 /* progressivedb.sqlite-shm */,
+				E7D6A109224D809700404A07 /* progressivedb.sqlite-wal */,
+			);
+			path = progressivedb_v1;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -347,6 +388,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7D6A10C224D809700404A07 /* progressivedb.sqlite-wal in Resources */,
+				E7D6A10B224D809700404A07 /* progressivedb.sqlite in Resources */,
+				E7D6A10D224D809700404A07 /* progressivedb.sqlite-shm in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,18 +484,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7D6A100224D628000404A07 /* CoreDataDiskStorage.swift in Sources */,
 				E75CDDE0217D185500DDC4C8 /* DatabaseOperation.swift in Sources */,
 				E75CDDDB217D185500DDC4C8 /* DatabaseKeyedDecodingContainer.swift in Sources */,
 				E75CDDE4217D185500DDC4C8 /* DatabaseDecoderError.swift in Sources */,
+				E7D6A104224D636600404A07 /* MemoryDatabaseOptions.swift in Sources */,
 				E7887E7121854EA400ED5C82 /* DBDataTypeWrapper.swift in Sources */,
 				E7D545D421FA59C60004567D /* BigIntDBWrapper.swift in Sources */,
+				E7D6A102224D629000404A07 /* CoreDataMemoryStorage.swift in Sources */,
 				E75CDDE5217D185500DDC4C8 /* DatabaseError.swift in Sources */,
 				E75CDDDC217D185500DDC4C8 /* DatabaseDecoder.swift in Sources */,
 				E75CDDDE217D185500DDC4C8 /* NSManagedObject+Database.swift in Sources */,
 				E75CDDE7217D185500DDC4C8 /* Database.swift in Sources */,
 				E7887E732185858B00ED5C82 /* DBDataTypeEquality.swift in Sources */,
+				E7D6A0FE224D623500404A07 /* DiskDatabaseOptions.swift in Sources */,
 				E75CDDE9217D185500DDC4C8 /* DatabaseModelObject.swift in Sources */,
-				E75CDDE2217D185500DDC4C8 /* DatabaseType.swift in Sources */,
 				E75CDDE1217D185500DDC4C8 /* DatabaseUpdate.swift in Sources */,
 				E75CDDDF217D185500DDC4C8 /* NSManagedObjectContext+Database.swift in Sources */,
 				E75CDDDD217D185500DDC4C8 /* MirrorChild+Databases.swift in Sources */,
@@ -464,7 +511,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				E75CDDEB217D1AF700DDC4C8 /* TestDatabase.xcdatamodeld in Sources */,
+				E7D6A112224D947F00404A07 /* ProgressiveV1toV2.xcmappingmodel in Sources */,
 				E75CDDB7217D178D00DDC4C8 /* DatabasesTests.swift in Sources */,
+				E7D6A106224D7D6000404A07 /* MigrationTests.swift in Sources */,
+				E7D6A114224D949D00404A07 /* ProgressiveV2toV3.xcmappingmodel in Sources */,
+				E7D6A0F3224C207000404A07 /* ProgressiveMigrationDB.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -732,6 +783,19 @@
 			);
 			currentVersion = E75CDDD7217D185500DDC4C8 /* v2.0.xcdatamodel */;
 			path = TestDatabase.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		E7D6A0F1224C207000404A07 /* ProgressiveMigrationDB.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				E7D6A0F2224C207000404A07 /* ProgressiveMigrationDB.xcdatamodel */,
+				E7D6A0F4224C211700404A07 /* v2db.xcdatamodel */,
+				E7D6A110224D932C00404A07 /* v3db.xcdatamodel */,
+				E7D6A115224D94F600404A07 /* v4db.xcdatamodel */,
+			);
+			currentVersion = E7D6A115224D94F600404A07 /* v4db.xcdatamodel */;
+			path = ProgressiveMigrationDB.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
