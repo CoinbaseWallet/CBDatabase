@@ -29,7 +29,6 @@ final class DatabaseKeyedDecodingContainer<Key: CodingKey>: KeyedDecodingContain
     }
 
     func decode(_: String.Type, forKey key: Key) throws -> String {
-        // print("key-> \(key) dictionary \(dictionary)")
         guard let value = dictionary[key.stringValue] as? String else {
             throw DatabaseDecoderError.unableToDecodeModelProperty
         }

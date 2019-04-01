@@ -19,6 +19,9 @@ public enum DatabaseError: Error {
     /// Thrown when managed object model cannot be created during DB setup
     case unableToCreateManagedObjectModel
 
+    /// Thrown when no managed object model is supplied
+    case missingManagedObjectModel
+
     /// Thrown when database setup fails
     case unableToSetupDatabase
 }

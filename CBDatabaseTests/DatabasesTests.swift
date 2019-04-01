@@ -11,13 +11,13 @@ class DatabasesTests: XCTestCase {
     let dbURL = Bundle(for: DatabasesTests.self).url(forResource: "TestDatabase", withExtension: "momd")!
 
     func testEmptyCount() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
         let count = try database.count(for: TestCurrency.self).toBlocking(timeout: unitTestsTimeout).single()
         XCTAssertEqual(0, count)
     }
 
     func testCountWithRecords() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         var count = try database.count(for: TestCurrency.self).toBlocking(timeout: unitTestsTimeout).single()
         XCTAssertEqual(0, count)
@@ -35,7 +35,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testDataTypeWrapper() throws {
-        let database = try Database(type: .sqlite(nil), modelURL: dbURL)
+        let database = try createMemoryDatabase()
         let expectedWallet = TestWallet(id: UUID().uuidString, name: "wallet 1", balance: BigInt(420))
 
         _ = try database.add(expectedWallet).toBlocking(timeout: unitTestsTimeout).single()
@@ -64,7 +64,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testAdvancedModel() throws {
-        let database = try Database(type: .sqlite(nil), modelURL: dbURL)
+        let database = try createMemoryDatabase()
         let expectedValue = TestAdvancedModel(customIdField: UUID().uuidString)
 
         _ = try database.add(expectedValue).toBlocking(timeout: unitTestsTimeout).single()
@@ -89,7 +89,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchLimit() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         let currencies = [
             TestCurrency(code: "JTC", name: "JOHNNYCOIN"),
@@ -107,7 +107,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchOffset() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -136,7 +136,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testFetchOne() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -160,7 +160,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testDestroy() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         _ = try database.addOrUpdate(TestCurrency(code: "HTC", name: "HISHCOIN"))
             .toBlocking(timeout: unitTestsTimeout).single()
@@ -186,7 +186,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testBatchUpdate() throws {
-        let database = try Database(type: .memory, modelURL: dbURL)
+        let database = try createMemoryDatabase()
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -214,7 +214,7 @@ class DatabasesTests: XCTestCase {
     }
 
     func testDiskSaveAndReset() throws {
-        let database = try Database(modelURL: dbURL)
+        let database = try createDiskDatabase()
 
         let currencies = [
             TestCurrency(code: "ATC", name: "ANDREWCOIN"),
@@ -277,4 +277,24 @@ struct TestAdvancedModel: DatabaseModelObject {
 
     var id: String { return customIdField }
     let customIdField: String
+}
+
+private func createMemoryDatabase() throws -> Database {
+    let memoryOptions = MemoryDatabaseOptions(
+        dbSchemaName: "TestDatabase",
+        dataModelBundle: Bundle(for: DatabasesTests.self)
+    )
+
+    return try Database(memory: memoryOptions)
+}
+
+private func createDiskDatabase() throws -> Database {
+    let diskOptions = try DiskDatabaseOptions(
+        dbSchemaName: "TestDatabase",
+        dbStorageFilename: "db",
+        versions: ["Model", "v2.0"],
+        dataModelBundle: Bundle(for: DatabasesTests.self)
+    )
+
+    return try Database(disk: diskOptions)
 }

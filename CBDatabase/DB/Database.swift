@@ -1,17 +1,25 @@
 // Copyright (c) 2017-2019 Coinbase Inc. See LICENSE
 
 import CoreData
+import os.log
 import RxCocoa
 import RxSwift
-import os.log
 
 public final class Database {
     private let concurrentDispatchQueueScheduler = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
     private let disposeBag = DisposeBag()
-    private let storage: DatabaseStorage
 
-    public init(type: DatabaseStorageType = .sqlite(nil), modelURL: URL, storeName: String = "DataStore") throws {
-        storage = try DatabaseStorage(storage: type, modelURL: modelURL, storeName: storeName)
+    /// Current storage option. Don't expose as public. Needed for unit tests
+    let storage: DatabaseStorage
+
+    /// Memory based database
+    public required init(memory options: MemoryDatabaseOptions) throws {
+        storage = try CoreDataMemoryStorage(options: options)
+    }
+
+    /// Disk based database
+    public required init(disk options: DiskDatabaseOptions) throws {
+        storage = try CoreDataDiskStorage(options: options)
     }
 
     /// Adds a new model to the database.
@@ -302,13 +310,7 @@ public final class Database {
                     "\(refreshedObjects.count) refresh(s)",
                 ]
 
-                os_log(
-                    "[%@] %@",
-                    log: OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "Databases"),
-                    type: .debug,
-                    T.entityName,
-                    pieces.joined(separator: ", ")
-                )
+                os_log("[%@] %@", type: .debug, T.entityName, pieces.joined(separator: ", "))
 
                 return update
             }

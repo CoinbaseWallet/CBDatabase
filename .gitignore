@@ -26,6 +26,7 @@ DerivedData
 *.xcscmblueprint
 *.gcno
 *.gcda
+**/xcuserdata
 
 # Carthage
 /Carthage/Checkouts
