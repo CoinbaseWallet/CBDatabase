@@ -1,0 +1,46 @@
+PODS:
+  - BigInt (3.1.0):
+    - SipHash (~> 1.2)
+  - RxAtomic (4.4.0)
+  - RxBlocking (4.3.1):
+    - RxSwift (~> 4.0)
+  - RxCocoa (4.4.0):
+    - RxSwift (~> 4.0)
+  - RxSwift (4.4.0):
+    - RxAtomic (~> 4.4)
+  - SipHash (1.2.2)
+  - SwiftFormat/CLI (0.37.2)
+  - SwiftLint (0.33.0)
+
+DEPENDENCIES:
+  - BigInt (~> 3.1)
+  - RxBlocking (~> 4.3.1)
+  - RxCocoa (~> 4.4.0)
+  - RxSwift (~> 4.4.0)
+  - SwiftFormat/CLI (= 0.37.2)
+  - SwiftLint
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - BigInt
+    - RxAtomic
+    - RxBlocking
+    - RxCocoa
+    - RxSwift
+    - SipHash
+    - SwiftFormat
+    - SwiftLint
+
+SPEC CHECKSUMS:
+  BigInt: 76b5dfdfa3e2e478d4ffdf161aeede5502e2742f
+  RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
+  RxBlocking: 64c051285261ca2339481e91b5f70eb06b03660a
+  RxCocoa: df63ebf7b9a70d6b4eeea407ed5dd4efc8979749
+  RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
+  SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
+  SwiftFormat: abbfb26dde4c6d683923cde153c88e10da9d7881
+  SwiftLint: fed9c66336e41fc74dc48a73678380718f0c8b0e
+
+PODFILE CHECKSUM: 3d24642c1886227a2082c9f598dd57f9ae0d7942
+
+COCOAPODS: 1.7.0

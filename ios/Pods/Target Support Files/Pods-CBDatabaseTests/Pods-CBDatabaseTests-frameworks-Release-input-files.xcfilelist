@@ -1,0 +1,4 @@
+${PODS_ROOT}/Target Support Files/Pods-CBDatabaseTests/Pods-CBDatabaseTests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework
+${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework
+${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework
