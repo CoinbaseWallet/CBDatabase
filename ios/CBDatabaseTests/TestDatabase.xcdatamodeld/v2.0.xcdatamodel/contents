@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18C54" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AdvancedModelCoreData" representedClassName="AdvancedModelCoreData" syncable="YES" codeGenerationType="class">
+        <attribute name="customIdField" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TestCurrency" representedClassName="." syncable="YES">
+        <attribute name="code" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+            <uniquenessConstraint>
+                <constraint value="code"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="TestWallet" representedClassName="" syncable="YES">
+        <attribute name="balance" optional="YES" attributeType="Transformable" valueTransformerName="" customClassName="CBDatabase.BigIntDBWrapper" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="AdvancedModelCoreData" positionX="63" positionY="180" width="128" height="60"/>
+        <element name="TestCurrency" positionX="63" positionY="144" width="128" height="90"/>
+        <element name="TestWallet" positionX="63" positionY="171" width="128" height="90"/>
+    </elements>
+</model>
