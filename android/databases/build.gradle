@@ -32,49 +32,35 @@ configurations {
 }
 
 dependencies {
-    ext.kotlinVersion = "1.3.31"
-    ext.rxAndroidVersion = "2.1.0"
-    ext.rxKotlinVersion = "2.3.0"
-    ext.okhttp3Version = "3.12.0"
-    ext.moshiVersion = "1.8.0"
-    ext.kotlinCoroutineVersion = "1.2.1"
-    ext.ktlintVersion = "0.32.0"
-    ext.dagger2Version = "2.22.1"
-    ext.roomVersion = "2.1.0-alpha04"
-    ext.androidXTestCore = "1.1.0"
-    ext.androidXTestRunner = "1.1.0"
-    ext.koptionalVersion = "1.6.0"
-
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
-    ktlint "com.pinterest:ktlint:${ktlintVersion}"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}"
+    ktlint "com.pinterest:ktlint:${versions.ktlintVersion}"
     kapt(
             // Dagger 2
-            "com.google.dagger:dagger-compiler:$dagger2Version",
-            "com.google.dagger:dagger-android-processor:$dagger2Version",
+            "com.google.dagger:dagger-compiler:${versions.dagger2}",
+            "com.google.dagger:dagger-android-processor:${versions.dagger2}",
             // Moshi
-            "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion",
+            "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}",
             // Room
-            "androidx.room:room-compiler:$roomVersion"
+            "androidx.room:room-compiler:${versions.roomVersion}"
     )
 
-    kaptAndroidTest("androidx.room:room-compiler:$roomVersion")
+    kaptAndroidTest("androidx.room:room-compiler:${versions.roomVersion}")
 
     // Test dependencies
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation "androidx.test:core:${androidXTestCore}"
-    androidTestImplementation "androidx.test:runner:${androidXTestRunner}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidXTestCore}"
+    androidTestImplementation "androidx.test:runner:${versions.androidXTestCore}"
+    androidTestImplementation "androidx.test:core:${versions.androidXTestCore}"
 
     // Module dependencies
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"
-    implementation "com.squareup.okhttp3:okhttp:$okhttp3Version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutineVersion"
-    implementation "androidx.room:room-runtime:$roomVersion"
-    implementation "androidx.room:room-rxjava2:$roomVersion"
-    implementation "com.gojuno.koptional:koptional:$koptionalVersion"
+    implementation "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin_version}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroidVersion}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlinVersion}"
+    implementation "androidx.room:room-runtime:${versions.roomVersion}"
+    implementation "androidx.room:room-rxjava2:${versions.roomVersion}"
+    implementation "com.gojuno.koptional:koptional:${versions.koptionalVersion}"
 }
 
 task ktlint(type: JavaExec, group: "verification") {

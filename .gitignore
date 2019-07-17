@@ -1,45 +1,31 @@
-# OS X
+# Built application files
+android/**/*.apk
+android/**/*.ap_
+
+# Files for the Dalvik VM
+android/**/*.dex
+
+# Java class files
+android/**/*.class
+android/**/bcprov*.jar
+
+# Generated files
+android/**/bin/
+android/**/gen/
+android/**/jniLibs/
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-.Spotlight-V100
-.Trashes
 
-# Xcode
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata
-*.xccheckout
-*.moved-aside
-DerivedData
-*.hmap
-*.ipa
-*.xcuserstate
-*.xcscmblueprint
-*.gcno
-*.gcda
-**/xcuserdata
+# Gradle files
+android/**/.gradle/
+android/**/build/
+android/**/captures
 
-# Carthage
-/Carthage/Checkouts
-Carthage/Build/Mac
-Carthage/Build/tvOS
-Carthage/Build/watchOS
-Carthage/Build/.*.version
+# Local configuration file (sdk path, etc)
+android/**/local.properties
 
-# AppCode
-/.idea
+# Log Files
+android/**/*.log
 
-# Ruby/Node
-vendor/bundle
-.bundle/
-node_modules/
-*.xcbkptlist
+# IDE Files
+.idea/
+*.iml

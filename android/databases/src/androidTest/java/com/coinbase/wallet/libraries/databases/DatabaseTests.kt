@@ -1,7 +1,8 @@
 package com.coinbase.wallet.libraries.databases
 
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.coinbase.wallet.libraries.databases.db.Database
 import com.coinbase.wallet.libraries.databases.model.MemoryOptions
 import com.gojuno.koptional.Optional
@@ -167,7 +168,7 @@ class DatabaseTests {
     }
 
     private fun createMemoryDatabase(): Database<MockDatabaseProvider> {
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val memoryOptions = MemoryOptions(context, MockDatabaseProvider::class.java)
         val database = Database(memory = memoryOptions)
 

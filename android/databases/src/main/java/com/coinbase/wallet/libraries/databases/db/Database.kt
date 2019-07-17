@@ -19,7 +19,15 @@ class Database<T : RoomDatabaseProvider>() {
     private lateinit var provider: RoomDatabaseProvider
 
     constructor(disk: DiskOptions<T>) : this() {
-        provider = Room.databaseBuilder(disk.context, disk.providerClazz, disk.dbName).build()
+        val builder = Room.databaseBuilder(disk.context, disk.providerClazz, disk.dbName)
+
+        disk.migrations.forEach { builder.addMigrations(it) }
+
+        if (disk.destructiveFallback) {
+            builder.fallbackToDestructiveMigration()
+        }
+
+        provider = builder.build()
         modelDaos = provider.modelMappings()
     }
 

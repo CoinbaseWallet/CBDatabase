@@ -1,10 +1,11 @@
 package com.coinbase.wallet.libraries.databases.interfaces
 
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.RawQuery
 import androidx.room.Update
+import androidx.room.RawQuery
+import androidx.room.Transaction
+import androidx.room.Delete
 import androidx.sqlite.db.SupportSQLiteQuery
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -52,6 +53,7 @@ interface DatabaseDaoInterface<T> {
      * @return A Single wrapping the items returned by the fetch.
      */
     @RawQuery
+    @Transaction
     fun fetch(query: SupportSQLiteQuery): Single<List<T>>
 
     /**
