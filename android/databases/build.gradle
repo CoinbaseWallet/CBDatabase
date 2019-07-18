@@ -1,0 +1,80 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}"
+    ktlint "com.pinterest:ktlint:${versions.ktlintVersion}"
+    kapt(
+            // Dagger 2
+            "com.google.dagger:dagger-compiler:${versions.dagger2}",
+            "com.google.dagger:dagger-android-processor:${versions.dagger2}",
+            // Moshi
+            "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}",
+            // Room
+            "androidx.room:room-compiler:${versions.roomVersion}"
+    )
+
+    kaptAndroidTest("androidx.room:room-compiler:${versions.roomVersion}")
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidXTestCore}"
+    androidTestImplementation "androidx.test:runner:${versions.androidXTestCore}"
+    androidTestImplementation "androidx.test:core:${versions.androidXTestCore}"
+
+    // Module dependencies
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin_version}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroidVersion}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlinVersion}"
+    implementation "androidx.room:room-runtime:${versions.roomVersion}"
+    implementation "androidx.room:room-rxjava2:${versions.roomVersion}"
+    implementation "com.gojuno.koptional:koptional:${versions.koptionalVersion}"
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+}
+
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "-F", "src/**/*.kt"
+}
