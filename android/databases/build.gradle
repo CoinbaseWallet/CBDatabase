@@ -1,7 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply from: '../gradle/dependencies.gradle'
+
 
 android {
     compileSdkVersion 28
@@ -13,17 +14,8 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
     }
 }
 
@@ -32,35 +24,34 @@ configurations {
 }
 
 dependencies {
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}"
-    ktlint "com.pinterest:ktlint:${versions.ktlintVersion}"
+    ktlint "com.pinterest:ktlint:${otherVersions.ktlint}"
+
     kapt(
-            // Dagger 2
-            "com.google.dagger:dagger-compiler:${versions.dagger2}",
-            "com.google.dagger:dagger-android-processor:${versions.dagger2}",
-            // Moshi
-            "com.squareup.moshi:moshi-kotlin-codegen:${versions.moshi}",
-            // Room
-            "androidx.room:room-compiler:${versions.roomVersion}"
+            "androidx.room:room-compiler:${versions.room}"
     )
 
-    kaptAndroidTest("androidx.room:room-compiler:${versions.roomVersion}")
+    kaptAndroidTest("androidx.room:room-compiler:${versions.room}")
 
-    // Test dependencies
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation "androidx.test.ext:junit:${versions.androidXTestCore}"
-    androidTestImplementation "androidx.test:runner:${versions.androidXTestCore}"
-    androidTestImplementation "androidx.test:core:${versions.androidXTestCore}"
+    implementation(
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",
 
-    // Module dependencies
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin_version}"
-    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroidVersion}"
-    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlinVersion}"
-    implementation "androidx.room:room-runtime:${versions.roomVersion}"
-    implementation "androidx.room:room-rxjava2:${versions.roomVersion}"
-    implementation "com.gojuno.koptional:koptional:${versions.koptionalVersion}"
+            "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+            "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlin}",
+
+            "androidx.room:room-runtime:${versions.room}",
+            "androidx.room:room-rxjava2:${versions.room}",
+
+            project(":libraries:core"),
+    )
+
+    testImplementation(
+            "junit:junit:${testVersions.junit4}"
+    )
+
+    androidTestImplementation(
+            "androidx.test:core:${testVersions.androidXTestCore}",
+            "androidx.test:runner:${testVersions.androidXTestRunner}",
+    )
 }
 
 task ktlint(type: JavaExec, group: "verification") {

@@ -2,13 +2,13 @@ package com.coinbase.wallet.libraries.databases.db
 
 import androidx.room.Room
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.coinbase.wallet.core.util.Optional
+import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseDaoInterface
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseModelObject
 import com.coinbase.wallet.libraries.databases.model.DiskOptions
 import com.coinbase.wallet.libraries.databases.model.MemoryOptions
-import com.gojuno.koptional.Optional
-
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -55,7 +55,7 @@ class Database<T : RoomDatabaseProvider>() {
      * @return A Single wrapping an optional model indicating whether the add succeeded.
      */
     inline fun <reified T : DatabaseModelObject> add(model: T): Single<Optional<T>> {
-        return add(listOf(model)).map { Optional.toOptional(it.toNullable()?.firstOrNull()) }
+        return add(listOf(model)).map { it.toNullable()?.firstOrNull().toOptional() }
     }
 
     /**
@@ -71,10 +71,10 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.add(models)
-            .toSingleDefault(Optional.toOptional(models))
-            .onErrorReturn { Optional.toOptional(null) }
+            .toSingleDefault(models.toOptional())
+            .onErrorReturn { null.toOptional() }
             .doAfterSuccess { records ->
-                records.toNullable()?.forEach { notifyObservers(Optional.toOptional((it))) }
+                records.toNullable()?.forEach { notifyObservers(it.toOptional()) }
             }
     }
 
@@ -86,7 +86,7 @@ class Database<T : RoomDatabaseProvider>() {
      * @return A Single wrapping an optional model indicating whether the add/update succeeded.
      */
     inline fun <reified T : DatabaseModelObject> addOrUpdate(model: T): Single<Optional<T>> {
-        return addOrUpdate(listOf(model)).map { Optional.toOptional(it.toNullable()?.firstOrNull()) }
+        return addOrUpdate(listOf(model)).map { it.toNullable()?.firstOrNull().toOptional() }
     }
 
     /**
@@ -102,10 +102,10 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.addOrUpdate(models)
-            .toSingleDefault(Optional.toOptional(models))
-            .onErrorReturn { Optional.toOptional(null) }
+            .toSingleDefault(models.toOptional())
+            .onErrorReturn { null.toOptional() }
             .doAfterSuccess { records ->
-                records.toNullable()?.forEach { notifyObservers(Optional.toOptional((it))) }
+                records.toNullable()?.forEach { notifyObservers(it.toOptional()) }
             }
     }
 
@@ -118,7 +118,7 @@ class Database<T : RoomDatabaseProvider>() {
      *     in the database.
      */
     inline fun <reified T : DatabaseModelObject> update(model: T): Single<Optional<T>> {
-        return update(listOf(model)).map { Optional.toOptional(it.toNullable()?.firstOrNull()) }
+        return update(listOf(model)).map { it.toNullable()?.firstOrNull().toOptional() }
     }
 
     /**
@@ -135,10 +135,10 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.update(models)
-            .toSingleDefault(Optional.toOptional(models))
-            .onErrorReturn { Optional.toOptional(null) }
+            .toSingleDefault(models.toOptional())
+            .onErrorReturn { null.toOptional() }
             .doAfterSuccess { records ->
-                records.toNullable()?.forEach { notifyObservers(Optional.toOptional((it))) }
+                records.toNullable()?.forEach { notifyObservers(it.toOptional()) }
             }
     }
 
@@ -168,7 +168,7 @@ class Database<T : RoomDatabaseProvider>() {
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> fetchOne(query: String, vararg args: Any): Single<Optional<T>> {
-        return this.fetch<T>(query, *args).map { Optional.toOptional(it.firstOrNull()) }
+        return this.fetch<T>(query, *args).map { it.firstOrNull().toOptional() }
     }
 
     /**
@@ -209,7 +209,7 @@ class Database<T : RoomDatabaseProvider>() {
         return dao.delete(model)
             .toSingleDefault(true)
             .onErrorReturn { false }
-            .doAfterSuccess { notifyObservers(Optional.toOptional((model))) }
+            .doAfterSuccess { notifyObservers(model.toOptional()) }
     }
 
     /**
