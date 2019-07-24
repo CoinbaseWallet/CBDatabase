@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply from: '../gradle/dependencies.gradle'
 
-
 android {
     compileSdkVersion 28
     compileOptions {
@@ -27,30 +26,30 @@ dependencies {
     ktlint "com.pinterest:ktlint:${otherVersions.ktlint}"
 
     kapt(
-            "androidx.room:room-compiler:${versions.room}"
+        "androidx.room:room-compiler:${versions.room}"
     )
 
     kaptAndroidTest("androidx.room:room-compiler:${versions.room}")
 
     implementation(
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",
 
-            "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
-            "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlin}",
+        "io.reactivex.rxjava2:rxjava:${versions.rxJava}",
+        "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlin}",
 
-            "androidx.room:room-runtime:${versions.room}",
-            "androidx.room:room-rxjava2:${versions.room}",
+        "androidx.room:room-runtime:${versions.room}",
+        "androidx.room:room-rxjava2:${versions.room}",
 
-            project(":libraries:core"),
+        project(":libraries:core"),
     )
 
     testImplementation(
-            "junit:junit:${testVersions.junit4}"
+        "junit:junit:${testVersions.junit4}"
     )
 
     androidTestImplementation(
-            "androidx.test:core:${testVersions.androidXTestCore}",
-            "androidx.test:runner:${testVersions.androidXTestRunner}",
+        "androidx.test:core:${testVersions.androidXTestCore}",
+        "androidx.test:runner:${testVersions.androidXTestRunner}",
     )
 }
 
