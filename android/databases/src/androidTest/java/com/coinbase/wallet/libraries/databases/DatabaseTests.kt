@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.coinbase.wallet.libraries.databases.db.Database
 import com.coinbase.wallet.libraries.databases.model.MemoryOptions
-import com.gojuno.koptional.Optional
+import com.coinbase.wallet.core.util.Optional
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
