@@ -10,6 +10,7 @@ import com.coinbase.wallet.libraries.databases.model.MemoryOptions
 import com.gojuno.koptional.Optional
 
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 class Database<T : RoomDatabaseProvider>() {
     private lateinit var provider: RoomDatabaseProvider
+    val scheduler: Scheduler by lazy { Schedulers.io() }
 
     constructor(disk: DiskOptions<T>) : this() {
         provider = Room.databaseBuilder(disk.context, disk.providerClazz, disk.dbName).build()
@@ -63,6 +65,7 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.add(models)
+            .subscribeOn(scheduler)
             .toSingleDefault(Optional.toOptional(models))
             .onErrorReturn { Optional.toOptional(null) }
             .doAfterSuccess { records ->
@@ -94,6 +97,7 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.addOrUpdate(models)
+            .subscribeOn(scheduler)
             .toSingleDefault(Optional.toOptional(models))
             .onErrorReturn { Optional.toOptional(null) }
             .doAfterSuccess { records ->
@@ -127,6 +131,7 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.update(models)
+            .subscribeOn(scheduler)
             .toSingleDefault(Optional.toOptional(models))
             .onErrorReturn { Optional.toOptional(null) }
             .doAfterSuccess { records ->
@@ -148,6 +153,7 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.fetch(SimpleSQLiteQuery(query, args))
+            .subscribeOn(scheduler)
     }
 
     /**
@@ -183,7 +189,7 @@ class Database<T : RoomDatabaseProvider>() {
                     emitter.onSuccess(cursor.getInt(0))
                 }
             }
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(scheduler)
     }
 
     /**
@@ -199,6 +205,7 @@ class Database<T : RoomDatabaseProvider>() {
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
         return dao.delete(model)
+            .subscribeOn(scheduler)
             .toSingleDefault(true)
             .onErrorReturn { false }
             .doAfterSuccess { notifyObservers(Optional.toOptional((model))) }
