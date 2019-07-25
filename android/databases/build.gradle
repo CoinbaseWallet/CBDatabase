@@ -48,6 +48,7 @@ dependencies {
     )
 
     androidTestImplementation(
+        "androidx.test.ext:junit:${testVersions.androidXTestExtJUnit}",
         "androidx.test:core:${testVersions.androidXTestCore}",
         "androidx.test:runner:${testVersions.androidXTestRunner}",
     )
