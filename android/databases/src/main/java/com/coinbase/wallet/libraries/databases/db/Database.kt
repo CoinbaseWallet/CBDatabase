@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class Database<T : RoomDatabaseProvider>() {
     private lateinit var provider: RoomDatabaseProvider
-    private val scheduler: Scheduler by lazy { Schedulers.io() }
 
     constructor(disk: DiskOptions<T>) : this() {
         val builder = Room.databaseBuilder(disk.context, disk.providerClazz, disk.dbName)
@@ -48,6 +47,11 @@ class Database<T : RoomDatabaseProvider>() {
      * Mapping of class to Observer. Exposed for inline functions below
      */
     val observers = ConcurrentHashMap<Class<*>, PublishSubject<*>>()
+
+    /**
+     * Io scheduler used by database.  Only public so that it can be used in inline functions
+     */
+    val scheduler: Scheduler by lazy { Schedulers.io() }
 
     /**
      * Adds a new model to the database.
