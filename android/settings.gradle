@@ -1,4 +1,4 @@
 include ':libraries:core',
         ':databases'
 
-project(':libraries:core').projectDir = new File('libraries/cb-core/android/core')
+project(':libraries:core').projectDir = new File('libraries/core/android/core')

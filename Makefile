@@ -6,4 +6,4 @@ lint:
 	Pods/SwiftLint/swiftlint
 
 init:
-	 brew install gradle
+	 git submodule update --force --recursive --remote
