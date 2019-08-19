@@ -29,3 +29,5 @@ android/**/*.log
 # IDE Files
 .idea/
 *.iml
+android/**/.project
+
