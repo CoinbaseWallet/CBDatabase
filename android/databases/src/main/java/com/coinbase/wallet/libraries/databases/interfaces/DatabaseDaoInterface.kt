@@ -65,4 +65,14 @@ interface DatabaseDaoInterface<T> {
      */
     @Delete
     fun delete(model: T): Completable
+
+    /**
+     * Deletes the objects from the data store
+     *
+     * @param models The models to be deleted
+     *
+     * @return A Completable indicating whether the operation completed
+     */
+    @Delete
+    fun delete(models: List<T>): Completable
 }

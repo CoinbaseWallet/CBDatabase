@@ -224,6 +224,25 @@ class Database<T : RoomDatabaseProvider>() {
     }
 
     /**
+     * Deletes the objects from the data store.
+     *
+     * @param models The objects to be deleted.
+     *
+     * @return A Single wrapping a boolean indicating whether the delete succeeded.
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T: DatabaseModelObject> delete(models: List<T>): Single<Boolean> {
+        val dao = modelDaos[T::class.java] as? DatabaseDaoInterface<T>
+            ?: return Single.error(DatabaseException.MissingDao(T::class.java))
+
+        return dao.delete(models)
+            .subscribeOn(scheduler)
+            .toSingleDefault(true)
+            .onErrorReturn { false }
+            .doAfterSuccess { models.forEach { notifyObservers(it.toOptional()) } }
+    }
+
+    /**
      * Observe for a given model type
      *
      * @param clazz: Filter observer by model type
