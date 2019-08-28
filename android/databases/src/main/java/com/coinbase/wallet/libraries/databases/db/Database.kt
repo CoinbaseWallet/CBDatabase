@@ -164,8 +164,15 @@ class Database<T : RoomDatabaseProvider>() {
         val dao = modelDaos[T::class.java] as? DatabaseDaoInterface<T>
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
-        return dao.fetch(SimpleSQLiteQuery(query, args))
-            .subscribeOn(scheduler)
+        return if (args.isEmpty()) {
+            dao.fetch(SimpleSQLiteQuery(query))
+                .subscribeOn(scheduler)
+        } else {
+            regenerateQuery(query, *args).let { (newQuery, newArgs) ->
+                dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
+                    .subscribeOn(scheduler)
+            }
+        }
     }
 
     /**
@@ -279,5 +286,27 @@ class Database<T : RoomDatabaseProvider>() {
         }
 
         subject.onNext(element)
+    }
+
+    fun regenerateQuery(query: String, vararg args: Any): Pair<String, Array<*>> {
+        val flatArgs = mutableListOf<Any>()
+        return args.mapIndexedNotNull { index, arg ->
+            (arg as? Collection<Any>)?.let {
+                flatArgs.addAll(it)
+                index to it.size
+            } ?: run {
+                flatArgs.add(arg)
+                null
+            }
+        }.toMap().let { argIndexMap ->
+            if (argIndexMap.isEmpty()) query
+            else {
+                query.split("?").mapIndexed { argIndex, str ->
+                    argIndexMap[argIndex]?.takeIf { it > 1 }?.let { argCount ->
+                        str + "?,".repeat(argCount - 1)
+                    } ?: str
+                }.joinToString(separator = "?")
+            }
+        }.let { Pair(it, flatArgs.toTypedArray()) }
     }
 }

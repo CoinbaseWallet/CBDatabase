@@ -167,6 +167,56 @@ class DatabaseTests {
         Assert.assertEquals(expected.username, actual?.username)
     }
 
+    @Test
+    fun testRegenerateQuery() {
+        val database = createMemoryDatabase()
+
+        val query = """
+            SELECT *
+            FROM Address
+            WHERE blockchain = ?
+            AND currencyCode = ?
+            AND address in (?)
+        """.trimIndent()
+
+        val args = arrayOf("foo", "bar", listOf("0xab"))
+        val expectedArgs = arrayOf(args[0], args[1], (args[2] as List<String>)[0])
+        val args2 = arrayOf("foo", "bar", listOf("0xab", "0xbc"))
+
+        database.regenerateQuery(query, *args).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(query, resultQuery)
+            Assert.assertArrayEquals(expectedArgs, resultArgs)
+        }
+
+        val expectedQuery2 = """
+            SELECT *
+            FROM Address
+            WHERE blockchain = ?
+            AND currencyCode = ?
+            AND address in (?,?)
+        """.trimIndent()
+
+        val expectedArgs2 = arrayOf(args2[0], args2[1], (args2[2] as List<String>)[0], (args2[2] as List<String>)[1])
+
+        database.regenerateQuery(query, *args2).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(expectedQuery2, resultQuery)
+            Assert.assertArrayEquals(expectedArgs2, resultArgs)
+        }
+
+        val args3 = arrayOf("foo", "bar", "0xab")
+        database.regenerateQuery(query, *args3).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(query, resultQuery)
+            Assert.assertArrayEquals(args3, resultArgs)
+        }
+
+        val noArgsQuery = "SELECT * FROM Wallet order by currencyCode"
+
+        database.regenerateQuery(noArgsQuery).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(noArgsQuery, resultQuery)
+            Assert.assertEquals(0, resultArgs.size)
+        }
+    }
+
     private fun createMemoryDatabase(): Database<MockDatabaseProvider> {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val memoryOptions = MemoryOptions(context, MockDatabaseProvider::class.java)
