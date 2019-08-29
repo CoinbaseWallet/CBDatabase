@@ -2,6 +2,8 @@ package com.coinbase.wallet.libraries.databases.db
 
 import androidx.room.Room
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.coinbase.wallet.core.extensions.Strings
+import com.coinbase.wallet.core.extensions.empty
 import com.coinbase.wallet.core.util.Optional
 import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
@@ -296,18 +298,14 @@ class Database<T : RoomDatabaseProvider>() {
         val flatArgs = mutableListOf<Any>()
         val newQuery = query.split("?")
             .mapIndexed { index, str ->
-                val collection = args.getOrNull(index) as? Collection<Any>
-                val arg = if (index < args.size) {
-                    collection ?: listOf(args[index])
-                } else {
-                    emptyList()
-                }
-                val placeholders = arg.joinToString(",") { "?" }
+                val arg = args.getOrNull(index)
+                val argList = arg as? Collection<Any> ?: arg?.let { listOf(it) } ?: emptyList()
+                val placeholders = argList.joinToString(",") { "?" }
 
-                flatArgs.addAll(arg)
+                flatArgs.addAll(argList)
                 str + placeholders
             }
-            .joinToString(separator = "")
+            .joinToString(separator = Strings.empty)
 
         return Pair(newQuery, flatArgs.toTypedArray())
     }
