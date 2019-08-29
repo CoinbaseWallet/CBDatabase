@@ -2,6 +2,8 @@ package com.coinbase.wallet.libraries.databases.db
 
 import androidx.room.Room
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.coinbase.wallet.core.extensions.Strings
+import com.coinbase.wallet.core.extensions.empty
 import com.coinbase.wallet.core.util.Optional
 import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
@@ -164,8 +166,15 @@ class Database<T : RoomDatabaseProvider>() {
         val dao = modelDaos[T::class.java] as? DatabaseDaoInterface<T>
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
-        return dao.fetch(SimpleSQLiteQuery(query, args))
-            .subscribeOn(scheduler)
+        return buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
+            val fetcher = if (newArgs.isEmpty()) {
+                dao.fetch(SimpleSQLiteQuery(newQuery))
+            } else {
+                dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
+            }
+
+            fetcher.subscribeOn(scheduler)
+        }
     }
 
     /**
@@ -267,6 +276,7 @@ class Database<T : RoomDatabaseProvider>() {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> notifyObservers(record: Optional<T>) {
         val element = record.toNullable() ?: return
+
         val subject: PublishSubject<T> = synchronized(this) {
             var subject = observers[T::class.java] as? PublishSubject<T>
 
@@ -279,5 +289,24 @@ class Database<T : RoomDatabaseProvider>() {
         }
 
         subject.onNext(element)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun buildSQLQuery(query: String, vararg args: Any): Pair<String, Array<*>> {
+        if (args.isEmpty() || query.count { it == '?' } != args.size) return Pair(query, args)
+
+        val flatArgs = mutableListOf<Any>()
+        val newQuery = query.split("?")
+            .mapIndexed { index, str ->
+                val arg = args.getOrNull(index)
+                val argList = arg as? Collection<Any> ?: arg?.let { listOf(it) } ?: emptyList()
+                val placeholders = argList.joinToString(",") { "?" }
+
+                flatArgs.addAll(argList)
+                str + placeholders
+            }
+            .joinToString(separator = Strings.empty)
+
+        return Pair(newQuery, flatArgs.toTypedArray())
     }
 }

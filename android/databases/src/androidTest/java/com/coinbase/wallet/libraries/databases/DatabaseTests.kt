@@ -167,6 +167,87 @@ class DatabaseTests {
         Assert.assertEquals(expected.username, actual?.username)
     }
 
+    @Test
+    fun testBuildSQLQuery() {
+        val database = createMemoryDatabase()
+
+        val query = "SELECT * FROM Address WHERE blockchain = ? AND currencyCode = ? AND address in (?)"
+        val args = arrayOf("foo", "bar", listOf("0xab"))
+        val expectedArgs = arrayOf(args[0], args[1], (args[2] as List<String>)[0])
+        val args2 = arrayOf("foo", "bar", listOf("0xab", "0xbc"))
+
+        database.buildSQLQuery(query, *args).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(query, resultQuery)
+            Assert.assertArrayEquals(expectedArgs, resultArgs)
+        }
+
+        val expectedQuery2 = "SELECT * FROM Address WHERE blockchain = ? AND currencyCode = ? AND address in (?,?)"
+        val expectedArgs2 = arrayOf(args2[0], args2[1], (args2[2] as List<String>)[0], (args2[2] as List<String>)[1])
+
+        database.buildSQLQuery(query, *args2).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(expectedQuery2, resultQuery)
+            Assert.assertArrayEquals(expectedArgs2, resultArgs)
+        }
+
+        val queryMiddle = "SELECT * FROM Address WHERE blockchain = ? AND address in (?) AND currencyCode = ?"
+
+        val argsMiddle = arrayOf("foo", listOf("0xab", "0xcd"), "bar")
+        val expectedArgsMiddle = arrayOf(
+            argsMiddle[0],
+            (argsMiddle[1] as List<String>)[0],
+            (argsMiddle[1] as List<String>)[1],
+            argsMiddle[2]
+        )
+        val expectedQueryMiddle = "SELECT * FROM Address WHERE blockchain = ? AND address in (?,?) AND currencyCode = ?"
+
+        database.buildSQLQuery(queryMiddle, *argsMiddle).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(expectedQueryMiddle, resultQuery)
+            Assert.assertArrayEquals(expectedArgsMiddle, resultArgs)
+        }
+
+        val queryFirst = "SELECT * FROM Address WHERE address in (?) AND blockchain = ? AND currencyCode = ?"
+
+        val argsFirst = arrayOf(listOf("0xab", "0xcd"), "foo", "bar")
+        val expectedArgsFirst = arrayOf(
+            (argsFirst[0] as List<String>)[0],
+            (argsFirst[0] as List<String>)[1],
+            argsFirst[1],
+            argsFirst[2]
+        )
+        val expectedQueryFirst = "SELECT * FROM Address WHERE address in (?,?) AND blockchain = ? AND currencyCode = ?"
+
+        database.buildSQLQuery(queryFirst, *argsFirst).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(expectedQueryFirst, resultQuery)
+            Assert.assertArrayEquals(expectedArgsFirst, resultArgs)
+        }
+
+        val queryWithMultipleLists = "SELECT * FROM Transaction WHERE txHash IN (?) OR txHash IN (?)"
+        val expectedQueryWithMultipleLists = "SELECT * FROM Transaction WHERE txHash IN (?,?) OR txHash IN (?,?,?)"
+        val args4 = arrayOf(listOf("0x1", "0x2"), listOf("0x3", "0x4", "0x5"))
+        database.buildSQLQuery(queryWithMultipleLists, *args4).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(expectedQueryWithMultipleLists, resultQuery)
+            Assert.assertArrayEquals(args4.toList().flatten().toTypedArray(), resultArgs)
+        }
+    }
+
+    @Test
+    fun testBuildSQLQueryNoList() {
+        val database = createMemoryDatabase()
+        val query = "SELECT * FROM Address WHERE blockchain = ? AND currencyCode = ? AND address in (?)"
+        val args3 = arrayOf("foo", "bar", "0xab")
+        database.buildSQLQuery(query, *args3).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(query, resultQuery)
+            Assert.assertArrayEquals(args3, resultArgs)
+        }
+
+        val noArgsQuery = "SELECT * FROM Wallet order by currencyCode"
+
+        database.buildSQLQuery(noArgsQuery).let { (resultQuery, resultArgs) ->
+            Assert.assertEquals(noArgsQuery, resultQuery)
+            Assert.assertEquals(0, resultArgs.size)
+        }
+    }
+
     private fun createMemoryDatabase(): Database<MockDatabaseProvider> {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val memoryOptions = MemoryOptions(context, MockDatabaseProvider::class.java)
