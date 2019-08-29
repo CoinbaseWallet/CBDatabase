@@ -164,15 +164,15 @@ class Database<T : RoomDatabaseProvider>() {
         val dao = modelDaos[T::class.java] as? DatabaseDaoInterface<T>
             ?: return Single.error(DatabaseException.MissingDao(T::class.java))
 
-            return buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
-                val fetcher = if (newArgs.isEmpty()) {
-                    dao.fetch(SimpleSQLiteQuery(newQuery))
-                } else {
-                    dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
-                }
-
-                fetcher.subscribeOn(scheduler)
+        return buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
+            val fetcher = if (newArgs.isEmpty()) {
+                dao.fetch(SimpleSQLiteQuery(newQuery))
+            } else {
+                dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
             }
+
+            fetcher.subscribeOn(scheduler)
+        }
     }
 
     /**
@@ -292,24 +292,20 @@ class Database<T : RoomDatabaseProvider>() {
         if (args.isEmpty() || query.count { it == '?' } != args.size) return Pair(query, args)
 
         val flatArgs = mutableListOf<Any>()
-        val argIndexMap = args.mapIndexedNotNull { index, arg ->
-            if (arg is Collection<*>) {
-                flatArgs.addAll(arg as Collection<Any>)
-                index to arg.size
-            } else {
-                flatArgs.add(arg)
-                null
+        val newQuery = query.split("?")
+            .mapIndexed { argIndex, str ->
+                if (argIndex == args.size) return@mapIndexed str
+
+                if (argIndex < args.size && args[argIndex] is Collection<*>) {
+                    val argsCollection = args[argIndex] as Collection<Any>
+                    flatArgs.addAll(argsCollection)
+                    if (argsCollection.size > 1) str + "?,".repeat(argsCollection.size - 1) else str
+                } else {
+                    flatArgs.add(args[argIndex])
+                    str
+                }
             }
-        }.toMap()
-
-        if (argIndexMap.isEmpty()) return Pair(query, args)
-
-        val newQuery = query.split("?").mapIndexed { argIndex, str ->
-            val argCount = argIndexMap[argIndex] ?: return@mapIndexed str
-
-            if (argCount > 1) str + "?,".repeat(argCount - 1)
-            else str
-        }.joinToString(separator = "?")
+            .joinToString(separator = "?")
 
         return Pair(newQuery, flatArgs.toTypedArray())
     }

@@ -191,21 +191,33 @@ class DatabaseTests {
 
         val queryMiddle = "SELECT * FROM Address WHERE blockchain = ? AND address in (?) AND currencyCode = ?"
 
-        val argsMiddle = arrayOf("foo", listOf("0xab"), "bar")
-        val expectedArgsMiddle = arrayOf(argsMiddle[0], (argsMiddle[1] as List<String>)[0], argsMiddle[2])
+        val argsMiddle = arrayOf("foo", listOf("0xab", "0xcd"), "bar")
+        val expectedArgsMiddle = arrayOf(
+            argsMiddle[0],
+            (argsMiddle[1] as List<String>)[0],
+            (argsMiddle[1] as List<String>)[1],
+            argsMiddle[2]
+        )
+        val expectedQueryMiddle = "SELECT * FROM Address WHERE blockchain = ? AND address in (?,?) AND currencyCode = ?"
 
         database.buildSQLQuery(queryMiddle, *argsMiddle).let { (resultQuery, resultArgs) ->
-            Assert.assertEquals(queryMiddle, resultQuery)
+            Assert.assertEquals(expectedQueryMiddle, resultQuery)
             Assert.assertArrayEquals(expectedArgsMiddle, resultArgs)
         }
 
         val queryFirst = "SELECT * FROM Address WHERE address in (?) AND blockchain = ? AND currencyCode = ?"
 
-        val argsFirst = arrayOf(listOf("0xab"), "foo", "bar")
-        val expectedArgsFirst = arrayOf((argsFirst[0] as List<String>)[0], argsFirst[1], argsFirst[2])
+        val argsFirst = arrayOf(listOf("0xab", "0xcd"), "foo", "bar")
+        val expectedArgsFirst = arrayOf(
+            (argsFirst[0] as List<String>)[0],
+            (argsFirst[0] as List<String>)[1],
+            argsFirst[1],
+            argsFirst[2]
+        )
+        val expectedQueryFirst = "SELECT * FROM Address WHERE address in (?,?) AND blockchain = ? AND currencyCode = ?"
 
         database.buildSQLQuery(queryFirst, *argsFirst).let { (resultQuery, resultArgs) ->
-            Assert.assertEquals(queryFirst, resultQuery)
+            Assert.assertEquals(expectedQueryFirst, resultQuery)
             Assert.assertArrayEquals(expectedArgsFirst, resultArgs)
         }
 
