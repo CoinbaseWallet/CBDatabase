@@ -274,6 +274,7 @@ class Database<T : RoomDatabaseProvider>() {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> notifyObservers(record: Optional<T>) {
         val element = record.toNullable() ?: return
+
         val subject: PublishSubject<T> = synchronized(this) {
             var subject = observers[T::class.java] as? PublishSubject<T>
 
