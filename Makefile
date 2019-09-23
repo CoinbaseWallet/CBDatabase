@@ -3,7 +3,9 @@ format:
 	gradle ktlintFormat -p android
 
 lint:
-	Pods/SwiftLint/swiftlint
+	ios/Pods/SwiftLint/swiftlint --path ios
+	android/gradlew ktlint -p android
 
-init:
-	 git submodule update --force --recursive --remote
+deps:
+	rm -rf android/libraries; git submodule update --init --force --recursive
+	git submodule foreach 'git checkout $$sha1 || :'
