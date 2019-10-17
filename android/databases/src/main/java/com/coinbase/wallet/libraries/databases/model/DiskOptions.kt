@@ -2,6 +2,7 @@ package com.coinbase.wallet.libraries.databases.model
 
 import android.content.Context
 import androidx.room.migration.Migration
+import com.coinbase.wallet.libraries.databases.interfaces.StorageOptions
 
 /**
  * Options for Room sqlite database
@@ -18,4 +19,4 @@ data class DiskOptions<T>(
     val dbName: String,
     val migrations: List<Migration> = emptyList(),
     val destructiveFallback: Boolean = false
-)
+) : StorageOptions
