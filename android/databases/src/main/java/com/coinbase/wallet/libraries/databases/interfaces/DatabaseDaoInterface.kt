@@ -6,8 +6,6 @@ import androidx.room.Update
 import androidx.room.RawQuery
 import androidx.room.Delete
 import androidx.sqlite.db.SupportSQLiteQuery
-import io.reactivex.Completable
-import io.reactivex.Single
 
 /**
  * DAO interface used as a common DAO interface in Database object
@@ -21,7 +19,7 @@ interface DatabaseDaoInterface<T> {
      * @return A Completable indicating whether the operation completed
      */
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun add(model: List<T>): Completable
+    fun add(model: List<T>)
 
     /**
      * Adds new models or update if existing records are found.
@@ -31,7 +29,7 @@ interface DatabaseDaoInterface<T> {
      * @return A Completable indicating whether the operation completed
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addOrUpdate(model: List<T>): Completable
+    fun addOrUpdate(model: List<T>)
 
     /**
      * Updates the objects in the datastore
@@ -41,7 +39,7 @@ interface DatabaseDaoInterface<T> {
      * @return A Completable indicating whether the operation completed
      */
     @Update
-    fun update(model: List<T>): Completable
+    fun update(model: List<T>)
 
     /**
      * Fetches objects from the data store using given raw SQL
@@ -52,7 +50,7 @@ interface DatabaseDaoInterface<T> {
      * @return A Single wrapping the items returned by the fetch.
      */
     @RawQuery
-    fun fetch(query: SupportSQLiteQuery): Single<List<T>>
+    fun fetch(query: SupportSQLiteQuery): List<T>
 
     /**
      * Deletes the object from the data store.
@@ -62,5 +60,5 @@ interface DatabaseDaoInterface<T> {
      * @return A Completable indicating whether the operation completed
      */
     @Delete
-    fun delete(model: T): Completable
+    fun delete(model: T)
 }

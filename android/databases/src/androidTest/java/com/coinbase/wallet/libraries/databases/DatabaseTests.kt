@@ -3,16 +3,18 @@ package com.coinbase.wallet.libraries.databases
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.coinbase.wallet.libraries.databases.db.Database
-import com.coinbase.wallet.libraries.databases.model.MemoryOptions
 import com.coinbase.wallet.core.util.Optional
+import com.coinbase.wallet.libraries.databases.db.Database
+import com.coinbase.wallet.libraries.databases.model.DiskOptions
+import com.coinbase.wallet.libraries.databases.model.MemoryOptions
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
-import io.reactivex.rxkotlin.Singles
 
 @RunWith(AndroidJUnit4::class)
 class DatabaseTests {
@@ -99,7 +101,7 @@ class DatabaseTests {
         var count = database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
         Assert.assertEquals(1, count)
 
-        database.add(record).blockingGet()
+        database.addOrUpdate(record).blockingGet()
         count = database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
         Assert.assertEquals(1, count)
     }
@@ -246,6 +248,95 @@ class DatabaseTests {
             Assert.assertEquals(noArgsQuery, resultQuery)
             Assert.assertEquals(0, resultArgs.size)
         }
+    }
+
+    @Test
+    fun testDiskDBReset() {
+        val database = createDiskDatabase()
+        val record = TestCurrency(code = "JTC", name = "JOHNNYCOIN")
+        val record2 = TestCurrency(code = "HTC", name = "HISHCOIN")
+        val currencies = listOf(record, record2)
+
+        database.add(currencies).blockingGet()
+
+        var count = database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
+        Assert.assertEquals(currencies.size, count)
+
+        database.reset()
+
+        count = database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
+        Assert.assertEquals(0, count)
+
+        val fetched = database.fetchOne<TestCurrency>("SELECT * FROM TestCurrency where code = ? LIMIT 1", "HTC")
+            .blockingGet()
+
+        Assert.assertNull(fetched.value)
+    }
+
+    @Test
+    fun testDiskDBDestroy() {
+        val database = createDiskDatabase()
+        val record = TestCurrency(code = "JTC", name = "JOHNNYCOIN")
+        val record2 = TestCurrency(code = "HTC", name = "HISHCOIN")
+        val currencies = listOf(record, record2)
+
+        database.add(currencies).blockingGet()
+
+        val count = database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
+        Assert.assertEquals(currencies.size, count)
+
+        database.destroy()
+
+        try {
+            database.count("SELECT COUNT(*) FROM TestCurrency").blockingGet()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+
+        try {
+            database.fetchOne<TestCurrency>("SELECT * FROM TestCurrency where code = ? LIMIT 1", "HTC").blockingGet()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+
+        try {
+            database.fetch<TestCurrency>("SELECT * FROM TestCurrency where code = ?", "HTC").blockingGet()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+
+        try {
+            database.delete(record).blockingGet()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+
+        try {
+            database.addOrUpdate(currencies).blockingGet()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+
+        try {
+            database.observe(TestCurrency::class.java).blockingFirst()
+            Assert.fail("Should thrown an exception")
+        } catch (e: Throwable) {
+            print("threw $e")
+        }
+    }
+
+    private fun createDiskDatabase(): Database<MockDatabaseProvider> {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val dbName = UUID.randomUUID().toString()
+        val diskOptions = DiskOptions(context, MockDatabaseProvider::class.java, dbName)
+        val database = Database(disk = diskOptions)
+
+        return database
     }
 
     private fun createMemoryDatabase(): Database<MockDatabaseProvider> {
