@@ -170,17 +170,7 @@ class Storage<P : RoomDatabaseProvider> private constructor() {
             return@read Observable.error(DatabaseException.DatabaseDestroyed)
         }
 
-        synchronized(this) {
-            val existingSubject = observers[clazz] as? PublishSubject<T>
-            if (existingSubject != null) {
-                return@synchronized existingSubject.hide()
-            }
-
-            val subject = PublishSubject.create<T>()
-            observers[clazz] = subject
-
-            return@synchronized subject.hide()
-        }
+        getOrCreateSubject(clazz).hide()
     }
 
     /**
@@ -188,22 +178,39 @@ class Storage<P : RoomDatabaseProvider> private constructor() {
      *
      * @param record A db record published to observers
      */
-    @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> notifyObservers(record: Optional<T>) {
-        val element = record.toNullable() ?: return
+        val (subject, isDestroyed, element) = multiReadSingleWriteLock.read {
+            val element = record.toNullable() ?: return
+            val subject = getOrCreateSubject(T::class.java)
 
-        val subject: PublishSubject<T> = synchronized(this) {
-            var subject = observers[T::class.java] as? PublishSubject<T>
-
-            if (subject == null) {
-                subject = PublishSubject.create()
-                observers[T::class.java] = subject
-            }
-
-            return@synchronized subject
+            Triple(subject, this.isDestroyed, element)
         }
 
-        subject.onNext(element)
+        if (isDestroyed) {
+            subject.onError(DatabaseException.DatabaseDestroyed)
+        } else {
+            subject.onNext(element)
+        }
+    }
+
+    /**
+     * Create or create subject for given class type
+     *
+     * @param clazz: Generic type for the subject
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : DatabaseModelObject> getOrCreateSubject(
+        clazz: Class<T>
+    ): PublishSubject<T> = synchronized(this) {
+        var subject = observers[T::class.java] as? PublishSubject<T>
+
+        if (subject == null) {
+            subject = PublishSubject.create()
+            observers[T::class.java] = subject
+            subject
+        } else {
+            subject
+        }
     }
 
     /**

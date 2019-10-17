@@ -52,10 +52,10 @@ class Database<T : RoomDatabaseProvider> private constructor() {
     ): Single<Optional<List<T>>> = storage
         .perform<T, Optional<List<T>>>(DatabaseOperation.WRITE) { dao ->
             dao.add(models)
-            models.forEach { storage.notifyObservers(it.toOptional()) }
 
             models.toOptional()
         }
+        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
 
     /**
      * Adds a new model or update if an existing record is found.
@@ -81,10 +81,10 @@ class Database<T : RoomDatabaseProvider> private constructor() {
     ): Single<Optional<List<T>>> = storage
         .perform<T, Optional<List<T>>>(DatabaseOperation.WRITE) { dao ->
             dao.addOrUpdate(models)
-            models.forEach { storage.notifyObservers(it.toOptional()) }
 
             models.toOptional()
         }
+        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
 
     /**
      * Updates the object in the data store.
@@ -112,10 +112,10 @@ class Database<T : RoomDatabaseProvider> private constructor() {
     ): Single<Optional<List<T>>> = storage
         .perform<T, Optional<List<T>>>(DatabaseOperation.WRITE) { dao ->
             dao.update(models)
-            models.forEach { storage.notifyObservers(it.toOptional()) }
 
             models.toOptional()
         }
+        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
 
     /**
      * Fetches objects from the data store using given SQL
