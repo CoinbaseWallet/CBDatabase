@@ -24,35 +24,36 @@ import kotlin.concurrent.write
 /**
  *  Room sqlitedb storage handler
  *
- *  @property modelDaos Mapping of database models to Dao. Exposed for inline functions below.
+ *  @property modelDaos Mapping of database models to Dao.
  */
-class Storage<P : RoomDatabaseProvider> private constructor() {
+@PublishedApi
+internal class Storage<P : RoomDatabaseProvider> private constructor() {
     private lateinit var options: StorageOptions
     private lateinit var provider: RoomDatabaseProvider
 
     /**
-     * Mapping of class to Observer. Exposed due to inline functions restriction
+     * Mapping of class to Observer.
      */
     val observers = ConcurrentHashMap<Class<*>, PublishSubject<*>>()
 
     /**
-     * Mapping of database models to Dao. Exposed due to inline functions restriction
+     * Mapping of database models to Dao.
      */
     lateinit var modelDaos: Map<Class<*>, DatabaseDaoInterface<*>>
         private set
 
     /**
-     * Read/Write lock for accessing the database. Exposed due to inline functions restriction
+     * Read/Write lock for accessing the database.
      */
     val multiReadSingleWriteLock = ReentrantReadWriteLock()
 
     /**
-     * Io scheduler used by database. Exposed due to inline functions restriction
+     * Io scheduler used by database.
      */
     val scheduler: Scheduler by lazy { Schedulers.io() }
 
     /**
-     * Determine whether db was destroyed.Exposed due to inline functions restriction
+     * Determine whether db was destroyed.
      */
     var isDestroyed = false
         private set
@@ -174,7 +175,7 @@ class Storage<P : RoomDatabaseProvider> private constructor() {
     }
 
     /**
-     * Notifies the observers of any changes. This is exposed due to inline function visibility restriction
+     * Notifies the observers of any changes.
      *
      * @param record A db record published to observers
      */

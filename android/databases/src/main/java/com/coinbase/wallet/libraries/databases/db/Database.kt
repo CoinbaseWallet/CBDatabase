@@ -15,9 +15,10 @@ import io.reactivex.Single
 
 class Database<T : RoomDatabaseProvider> private constructor() {
     /**
-     * Manages the data underlying storage. Exposed due to inline functions restriction
+     * Manages the data underlying storage.
      */
-    lateinit var storage: Storage<T>
+    @PublishedApi
+    internal lateinit var storage: Storage<T>
         private set
 
     constructor(disk: DiskOptions<T>) : this() {
@@ -225,8 +226,11 @@ class Database<T : RoomDatabaseProvider> private constructor() {
      */
     fun reset() = storage.reset()
 
+    // Private/Internal helpers
+
     @Suppress("UNCHECKED_CAST")
-    fun buildSQLQuery(query: String, vararg args: Any): Pair<String, Array<*>> {
+    @PublishedApi
+    internal fun buildSQLQuery(query: String, vararg args: Any): Pair<String, Array<*>> {
         if (args.isEmpty() || query.count { it == '?' } != args.size) return Pair(query, args)
 
         val flatArgs = mutableListOf<Any>()

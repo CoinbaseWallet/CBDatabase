@@ -3,7 +3,8 @@ package com.coinbase.wallet.libraries.databases.model
 /**
  * Represents a database operation
  */
-enum class DatabaseOperation {
+@PublishedApi
+internal enum class DatabaseOperation {
     /**
      * Read only operation
      */
