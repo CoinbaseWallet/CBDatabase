@@ -194,7 +194,7 @@ class Storage<P : RoomDatabaseProvider> private constructor() {
     }
 
     /**
-     * Create or create subject for given class type
+     * Get or create subject for given class type
      *
      * @param clazz: Generic type for the subject
      */
