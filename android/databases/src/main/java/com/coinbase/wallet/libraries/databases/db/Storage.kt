@@ -242,9 +242,6 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
             // Force a wal checkpoint which would transfer all transactions from the WAL file into the original DB.
             // This step is just a precaution to make sure no data is left in the original DB file.
             provider.query(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
-
-            // delete db files on file
-            disk.context.deleteDatabase(disk.dbName)
         }
     }
 }
