@@ -1,6 +1,7 @@
 package com.coinbase.wallet.libraries.databases.db
 
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.coinbase.wallet.core.util.Optional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
@@ -29,7 +30,8 @@ import kotlin.concurrent.write
 @PublishedApi
 internal class Storage<P : RoomDatabaseProvider> private constructor() {
     private lateinit var options: StorageOptions
-    private lateinit var provider: RoomDatabaseProvider
+    @PublishedApi
+    internal lateinit var provider: RoomDatabaseProvider
 
     /**
      * Mapping of class to Observer.
@@ -109,6 +111,44 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
 
             try {
                 val result = work(dao) as? R ?: throw IllegalArgumentException("Invalid result")
+                emitter.onSuccess(result)
+            } catch (err: Throwable) {
+                emitter.onError(err)
+            } finally {
+                lock.unlock()
+            }
+        }
+        .subscribeOn(scheduler)
+        .observeOn(scheduler)
+
+    /**
+     * Perform database operation within the read/write lock
+     *
+     * @param operation Indicate the type of operation to execute
+     * @param work closure called when performing a database operation
+     *
+     * @return Single wrapping model(s) involved in the db operation
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified R> performRawSQLQuery(
+        operation: DatabaseOperation,
+        crossinline work: (roomDatabase: RoomDatabase) -> R
+    ): Single<R> = Single
+        .create<R> { emitter ->
+            val lock: Lock = when (operation) {
+                DatabaseOperation.READ -> multiReadSingleWriteLock.readLock()
+                DatabaseOperation.WRITE -> multiReadSingleWriteLock.writeLock()
+            }
+
+            lock.lock()
+
+            if (isDestroyed) {
+                lock.unlock()
+                return@create emitter.onError(DatabaseException.DatabaseDestroyed)
+            }
+
+            try {
+                val result = work(provider) as? R ?: throw IllegalArgumentException("Invalid result")
                 emitter.onSuccess(result)
             } catch (err: Throwable) {
                 emitter.onError(err)

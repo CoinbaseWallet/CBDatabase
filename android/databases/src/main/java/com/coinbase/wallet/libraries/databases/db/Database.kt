@@ -13,19 +13,19 @@ import com.coinbase.wallet.libraries.databases.model.MemoryOptions
 import io.reactivex.Observable
 import io.reactivex.Single
 
-class Database<T : RoomDatabaseProvider> private constructor() {
+class Database<R : RoomDatabaseProvider> private constructor() {
     /**
      * Manages the data underlying storage.
      */
     @PublishedApi
-    internal lateinit var storage: Storage<T>
+    internal lateinit var storage: Storage<R>
         private set
 
-    constructor(disk: DiskOptions<T>) : this() {
+    constructor(disk: DiskOptions<R>) : this() {
         storage = Storage(disk)
     }
 
-    constructor(memory: MemoryOptions<T>) : this() {
+    constructor(memory: MemoryOptions<R>) : this() {
         storage = Storage(memory)
     }
 
@@ -117,6 +117,30 @@ class Database<T : RoomDatabaseProvider> private constructor() {
             models.toOptional()
         }
         .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
+
+    /**
+     * Fetches objects from the data store using given SQL
+     *
+     * @param query SQL query used to fetch the data
+     * @param args Argument passed to fill placeholders in the query above
+     *
+     * @return A Single wrapping the items returned by the fetch.
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : DatabaseModelObject> update(
+        query: String,
+        vararg args: Any
+    ): Single<Unit> = storage
+        .performRawSQLQuery(DatabaseOperation.WRITE) { roomDatabase ->
+            buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
+                val cursor = if (newArgs.isEmpty()) {
+                    roomDatabase.query(SimpleSQLiteQuery(newQuery))
+                } else {
+                    roomDatabase.query(SimpleSQLiteQuery(newQuery, newArgs))
+                }
+                cursor.close()
+            }
+        }
 
     /**
      * Fetches objects from the data store using given SQL
