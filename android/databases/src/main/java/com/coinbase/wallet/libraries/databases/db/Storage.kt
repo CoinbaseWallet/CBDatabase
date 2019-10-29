@@ -161,17 +161,15 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      *
      * @param clazz: Filter observer by model type
      *
-     * @return Single wrapping the updated model or an error is thrown
+     * @return Single wrapping the updated model or an error is thrown as well as a UUID
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> observe(
-        clazz: Class<T>
-    ): Observable<T> = multiReadSingleWriteLock.read {
+    inline fun <reified T : DatabaseModelObject> observe(): Observable<Optional<T>> = multiReadSingleWriteLock.read {
         if (isDestroyed) {
             return@read Observable.error(DatabaseException.DatabaseDestroyed)
         }
 
-        getOrCreateSubject(clazz).hide()
+        getOrCreateSubject<T>().hide()
     }
 
     /**
@@ -181,10 +179,9 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      */
     inline fun <reified T : DatabaseModelObject> notifyObservers(record: Optional<T>) {
         val (subject, isDestroyed, element) = multiReadSingleWriteLock.read {
-            val element = record.toNullable() ?: return
-            val subject = getOrCreateSubject(T::class.java)
+            val subject = getOrCreateSubject<T>()
 
-            Triple(subject, this.isDestroyed, element)
+            Triple(subject, this.isDestroyed, record)
         }
 
         if (isDestroyed) {
@@ -200,17 +197,17 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      * @param clazz: Generic type for the subject
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> getOrCreateSubject(
-        clazz: Class<T>
-    ): PublishSubject<T> = synchronized(this) {
-        var subject = observers[T::class.java] as? PublishSubject<T>
+    inline fun <reified T : DatabaseModelObject> getOrCreateSubject(): PublishSubject<Optional<T>> {
+        return synchronized(this) {
+            var subject = observers[T::class.java] as? PublishSubject<Optional<T>>
 
-        if (subject == null) {
-            subject = PublishSubject.create()
-            observers[T::class.java] = subject
-            subject
-        } else {
-            subject
+            if (subject == null) {
+                subject = PublishSubject.create()
+                observers[T::class.java] = subject
+                subject
+            } else {
+                subject
+            }
         }
     }
 

@@ -152,7 +152,7 @@ class DatabaseTests {
         var actual: MockUser? = null
         val latch = CountDownLatch(1)
 
-        database.observe(MockUser::class.java, id = "12")
+        database.observeAddOrUpdate<MockUser>(id = "12")
             .subscribe({
                 println("hish: observed $it")
                 actual = it
@@ -323,7 +323,7 @@ class DatabaseTests {
         }
 
         try {
-            database.observe(TestCurrency::class.java).blockingFirst()
+            database.observe<TestCurrency>().blockingFirst()
             Assert.fail("Should thrown an exception")
         } catch (e: Throwable) {
             print("threw $e")

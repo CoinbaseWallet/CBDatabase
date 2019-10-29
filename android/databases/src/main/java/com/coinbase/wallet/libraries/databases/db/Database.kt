@@ -3,6 +3,7 @@ package com.coinbase.wallet.libraries.databases.db
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.coinbase.wallet.core.extensions.Strings
 import com.coinbase.wallet.core.extensions.empty
+import com.coinbase.wallet.core.extensions.unwrap
 import com.coinbase.wallet.core.util.Optional
 import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
@@ -181,6 +182,7 @@ class Database<T : RoomDatabaseProvider> private constructor() {
                 false
             }
         }
+        .doAfterSuccess { storage.notifyObservers(model.toOptional()) }
 
     /**
      * Counts total stored objects for a given class
@@ -201,7 +203,17 @@ class Database<T : RoomDatabaseProvider> private constructor() {
      * @return Single wrapping the updated model or an error is thrown
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> observe(clazz: Class<T>): Observable<T> = storage.observe(clazz)
+    inline fun <reified T : DatabaseModelObject> observeAddOrUpdate(): Observable<T> = storage.observe<T>().unwrap()
+
+    /**
+     * Observe for a given model type
+     *
+     * @param clazz: Filter observer by model type
+     *
+     * @return Observe any updates to the db (including delete)
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : DatabaseModelObject> observe(): Observable<Optional<T>> = storage.observe()
 
     /**
      * Observe for a given model
@@ -211,10 +223,9 @@ class Database<T : RoomDatabaseProvider> private constructor() {
      *
      * @return Single wrapping the updated model or an error is thrown
      */
-    inline fun <reified T : DatabaseModelObject> observe(
-        clazz: Class<T>,
+    inline fun <reified T : DatabaseModelObject> observeAddOrUpdate(
         id: String
-    ): Observable<T> = observe(clazz).filter { it.id == id }
+    ): Observable<T> = observe<T>().unwrap().filter { it.id == id }
 
     /**
      * Delete sqlite file and marks it as destroyed. All read/write operations will fail
