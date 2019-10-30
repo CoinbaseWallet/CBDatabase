@@ -1,10 +1,7 @@
 package com.coinbase.wallet.libraries.databases.db
 
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.coinbase.wallet.core.util.Optional
-import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseDaoInterface
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseModelObject
