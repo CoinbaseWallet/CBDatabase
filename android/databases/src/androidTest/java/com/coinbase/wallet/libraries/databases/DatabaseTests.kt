@@ -352,7 +352,7 @@ class DatabaseTests {
                 latch.countDown()
             })
 
-        database.observeUpdates(TestWallet::class.java)
+        database.observeBatchUpdate(TestWallet::class.java)
             .subscribe({
                 observedUpdate = true
                 updateLatch.countDown()

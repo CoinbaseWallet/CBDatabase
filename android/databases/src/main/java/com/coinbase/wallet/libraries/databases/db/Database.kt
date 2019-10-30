@@ -252,12 +252,12 @@ class Database<R : RoomDatabaseProvider> private constructor() {
      *
      * @param clazz: Filter observer by model type
      *
-     * @return Observable wrapping the updated model or an error is thrown
+     * @return Observable wrapping whether a batch update has occurred
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> observeUpdates(
+    inline fun <reified T : DatabaseModelObject> observeBatchUpdate(
         clazz: Class<T>
-    ): Observable<String> = storage.observeUpdates(clazz)
+    ): Observable<String> = storage.observeBatchUpdate(clazz)
 
     /**
      * Delete sqlite file and marks it as destroyed. All read/write operations will fail

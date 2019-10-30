@@ -185,10 +185,10 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      *
      * @param clazz: Filter observer by model type
      *
-     * @return Observable wrapping a UUID indicating when the underlying table contents have changed
+     * @return Observable wrapping whether a batch update has occurred (the emitted value is a UUID)
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> observeUpdates(
+    inline fun <reified T : DatabaseModelObject> observeBatchUpdate(
         clazz: Class<T>
     ): Observable<String> = multiReadSingleWriteLock.read {
         if (isDestroyed) {
