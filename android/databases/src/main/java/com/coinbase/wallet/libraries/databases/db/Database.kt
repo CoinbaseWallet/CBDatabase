@@ -127,18 +127,27 @@ class Database<R : RoomDatabaseProvider> private constructor() {
      * @return A Single wrapping the items returned by the fetch.
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> update(
+    inline fun <reified T : DatabaseModelObject> runTransformation(
         query: String,
-        vararg args: Any
+        vararg args: Any,
+        crossinline transformation: (T) -> T
     ): Single<Unit> = storage
-        .performRawSQLQuery(DatabaseOperation.WRITE) { roomDatabase ->
+        .perform<T, Unit>(DatabaseOperation.WRITE) { dao ->
             buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
-                val cursor = if (newArgs.isEmpty()) {
-                    roomDatabase.query(SimpleSQLiteQuery(newQuery))
-                } else {
-                    roomDatabase.query(SimpleSQLiteQuery(newQuery, newArgs))
+                try {
+                    storage.provider.beginTransaction()
+                    val list = if (newArgs.isEmpty()) {
+                        dao.fetch(SimpleSQLiteQuery(newQuery))
+                    } else {
+                        dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
+                    }
+                    val updatedList = list.map { transformation.invoke(it) }
+                    dao.addOrUpdate(updatedList)
+                    updatedList.forEach { storage.notifyObservers(it.toOptional()) }
+                    storage.provider.setTransactionSuccessful()
+                } finally {
+                    storage.provider.endTransaction()
                 }
-                cursor.close()
             }
         }
 
