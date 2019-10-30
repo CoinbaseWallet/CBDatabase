@@ -56,7 +56,7 @@ class Database<R : RoomDatabaseProvider> private constructor() {
 
             models.toOptional()
         }
-        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
+        .doAfterSuccess { storage.notifyObservers(models) }
 
     /**
      * Adds a new model or update if an existing record is found.
@@ -85,7 +85,7 @@ class Database<R : RoomDatabaseProvider> private constructor() {
 
             models.toOptional()
         }
-        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
+        .doAfterSuccess { storage.notifyObservers(models) }
 
     /**
      * Updates the object in the data store.
@@ -116,7 +116,7 @@ class Database<R : RoomDatabaseProvider> private constructor() {
 
             models.toOptional()
         }
-        .doAfterSuccess { models.forEach { storage.notifyObservers(it.toOptional()) } }
+        .doAfterSuccess { storage.notifyObservers(models) }
 
     /**
      * Fetches objects from the data store using given SQL
@@ -138,16 +138,16 @@ class Database<R : RoomDatabaseProvider> private constructor() {
                     storage.provider.update(newQuery, newArgs)
                 }
             }
-            val foo = buildSQLQuery(fetchQuery, *args).let { (newQuery, newArgs) ->
+
+            buildSQLQuery(fetchQuery, *args).let { (newQuery, newArgs) ->
                 if (newArgs.isEmpty()) {
                     dao.fetch(SimpleSQLiteQuery(newQuery))
                 } else {
                     dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
                 }
             }
-            foo
         }
-        .doAfterSuccess { models -> models.forEach { storage.notifyObservers(it.toOptional()) } }
+        .doAfterSuccess { models -> storage.notifyObservers(models) }
 
     /**
      * Fetches objects from the data store using given SQL
@@ -229,7 +229,7 @@ class Database<R : RoomDatabaseProvider> private constructor() {
      *
      * @param clazz: Filter observer by model type
      *
-     * @return Single wrapping the updated model or an error is thrown
+     * @return Observable wrapping the updated model or an error is thrown
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> observe(clazz: Class<T>): Observable<T> = storage.observe(clazz)
@@ -240,12 +240,24 @@ class Database<R : RoomDatabaseProvider> private constructor() {
      * @param clazz Filter observer by model type
      * @param id Filter observer by model ID
      *
-     * @return Single wrapping the updated model or an error is thrown
+     * @return Observable wrapping the updated model or an error is thrown
      */
     inline fun <reified T : DatabaseModelObject> observe(
         clazz: Class<T>,
         id: String
     ): Observable<T> = observe(clazz).filter { it.id == id }
+
+    /**
+     * Observe for updates of a given model
+     *
+     * @param clazz: Filter observer by model type
+     *
+     * @return Observable wrapping the updated model or an error is thrown
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : DatabaseModelObject> observeUpdates(
+        clazz: Class<T>
+    ): Observable<String> = storage.observeUpdates(clazz)
 
     /**
      * Delete sqlite file and marks it as destroyed. All read/write operations will fail

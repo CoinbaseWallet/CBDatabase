@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.coinbase.wallet.core.util.Optional
+import com.coinbase.wallet.core.util.toOptional
 import com.coinbase.wallet.libraries.databases.exceptions.DatabaseException
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseDaoInterface
 import com.coinbase.wallet.libraries.databases.interfaces.DatabaseModelObject
@@ -16,6 +17,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -37,6 +39,11 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      * Mapping of class to Observer.
      */
     val observers = ConcurrentHashMap<Class<*>, PublishSubject<*>>()
+
+    /**
+     * Mapping of class to Observer emitting only update events
+     */
+    val observersUpdate = ConcurrentHashMap<Class<*>, PublishSubject<String>>()
 
     /**
      * Mapping of database models to Dao.
@@ -122,44 +129,6 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
         .observeOn(scheduler)
 
     /**
-     * Perform database operation within the read/write lock
-     *
-     * @param operation Indicate the type of operation to execute
-     * @param work closure called when performing a database operation
-     *
-     * @return Single wrapping model(s) involved in the db operation
-     */
-    @Suppress("UNCHECKED_CAST")
-    inline fun <reified R> performRawSQLQuery(
-        operation: DatabaseOperation,
-        crossinline work: (roomDatabase: RoomDatabase) -> R
-    ): Single<R> = Single
-        .create<R> { emitter ->
-            val lock: Lock = when (operation) {
-                DatabaseOperation.READ -> multiReadSingleWriteLock.readLock()
-                DatabaseOperation.WRITE -> multiReadSingleWriteLock.writeLock()
-            }
-
-            lock.lock()
-
-            if (isDestroyed) {
-                lock.unlock()
-                return@create emitter.onError(DatabaseException.DatabaseDestroyed)
-            }
-
-            try {
-                val result = work(provider) as? R ?: throw IllegalArgumentException("Invalid result")
-                emitter.onSuccess(result)
-            } catch (err: Throwable) {
-                emitter.onError(err)
-            } finally {
-                lock.unlock()
-            }
-        }
-        .subscribeOn(scheduler)
-        .observeOn(scheduler)
-
-    /**
      * Counts total stored objects for a given class
      *
      * @param query SQL query used to filter count
@@ -201,7 +170,7 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      *
      * @param clazz: Filter observer by model type
      *
-     * @return Single wrapping the updated model or an error is thrown
+     * @return Observable wrapping the updated model or an error is thrown
      */
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> observe(
@@ -211,7 +180,25 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
             return@read Observable.error(DatabaseException.DatabaseDestroyed)
         }
 
-        getOrCreateSubject(clazz).hide()
+        getOrCreateSubject(clazz).first.hide()
+    }
+
+    /**
+     * Observe for a given model type
+     *
+     * @param clazz: Filter observer by model type
+     *
+     * @return Observable wrapping a UUID indicating when the underlying table contents have changed
+     */
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : DatabaseModelObject> observeUpdates(
+        clazz: Class<T>
+    ): Observable<String> = multiReadSingleWriteLock.read {
+        if (isDestroyed) {
+            return@read Observable.error(DatabaseException.DatabaseDestroyed)
+        }
+
+        getOrCreateSubject(clazz).second.hide()
     }
 
     /**
@@ -219,18 +206,19 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
      *
      * @param record A db record published to observers
      */
-    inline fun <reified T : DatabaseModelObject> notifyObservers(record: Optional<T>) {
-        val (subject, isDestroyed, element) = multiReadSingleWriteLock.read {
-            val element = record.toNullable() ?: return
-            val subject = getOrCreateSubject(T::class.java)
+    inline fun <reified T : DatabaseModelObject> notifyObservers(records: List<T>) {
+        val (subjects, isDestroyed) = multiReadSingleWriteLock.read {
+            val subjects = getOrCreateSubject(T::class.java)
 
-            Triple(subject, this.isDestroyed, element)
+            Pair(subjects, this.isDestroyed)
         }
 
         if (isDestroyed) {
-            subject.onError(DatabaseException.DatabaseDestroyed)
+            subjects.first.onError(DatabaseException.DatabaseDestroyed)
+            subjects.second.onError(DatabaseException.DatabaseDestroyed)
         } else {
-            subject.onNext(element)
+            records.forEach { subjects.first.onNext(it) }
+            subjects.second.onNext(UUID.randomUUID().toString())
         }
     }
 
@@ -242,16 +230,20 @@ internal class Storage<P : RoomDatabaseProvider> private constructor() {
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : DatabaseModelObject> getOrCreateSubject(
         clazz: Class<T>
-    ): PublishSubject<T> = synchronized(this) {
+    ): Pair<PublishSubject<T>, PublishSubject<String>> = synchronized(this) {
         var subject = observers[T::class.java] as? PublishSubject<T>
+        var subjectUpdate = observersUpdate[T::class.java] as? PublishSubject<String>
 
         if (subject == null) {
             subject = PublishSubject.create()
             observers[T::class.java] = subject
-            subject
-        } else {
-            subject
         }
+
+        if (subjectUpdate == null) {
+            subjectUpdate = PublishSubject.create()
+            observersUpdate[T::class.java] = subjectUpdate
+        }
+        subject to subjectUpdate
     }
 
     /**
