@@ -338,7 +338,9 @@ class DatabaseTests {
         val wallets = listOf(record, record2)
         val expectedWallets = listOf(record2.copy(isActive = true))
         val observed = mutableListOf<TestWallet>()
+        var observedUpdate = false
         val latch = CountDownLatch(1)
+        val updateLatch = CountDownLatch(1)
 
         database.add(wallets).blockingGet()
 
@@ -350,6 +352,14 @@ class DatabaseTests {
                 latch.countDown()
             })
 
+        database.observeUpdates(TestWallet::class.java)
+            .subscribe({
+                observedUpdate = true
+                updateLatch.countDown()
+            }, {
+                updateLatch.countDown()
+            })
+
         val result = database.update<TestWallet>(
             "UPDATE TestWallet SET isActive = CASE network = ? WHEN 1 THEN 1 ELSE 0 END WHERE blockchain = ?",
             "SELECT * FROM TestWallet WHERE network = ? AND blockchain = ?",
@@ -358,9 +368,11 @@ class DatabaseTests {
         ).blockingGet()
 
         latch.await()
+        updateLatch.await()
 
         Assert.assertEquals(result, expectedWallets)
         Assert.assertEquals(observed, expectedWallets)
+        Assert.assertTrue(observedUpdate)
     }
 
     private fun createDiskDatabase(): Database<MockDatabaseProvider> {
