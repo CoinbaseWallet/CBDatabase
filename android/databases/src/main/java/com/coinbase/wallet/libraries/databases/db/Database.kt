@@ -127,29 +127,27 @@ class Database<R : RoomDatabaseProvider> private constructor() {
      * @return A Single wrapping the items returned by the fetch.
      */
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : DatabaseModelObject> runTransformation(
-        query: String,
-        vararg args: Any,
-        crossinline transformation: (T) -> T
-    ): Single<Unit> = storage
-        .perform<T, Unit>(DatabaseOperation.WRITE) { dao ->
-            buildSQLQuery(query, *args).let { (newQuery, newArgs) ->
-                try {
-                    storage.provider.beginTransaction()
-                    val list = if (newArgs.isEmpty()) {
-                        dao.fetch(SimpleSQLiteQuery(newQuery))
-                    } else {
-                        dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
-                    }
-                    val updatedList = list.map { transformation.invoke(it) }
-                    dao.addOrUpdate(updatedList)
-                    updatedList.forEach { storage.notifyObservers(it.toOptional()) }
-                    storage.provider.setTransactionSuccessful()
-                } finally {
-                    storage.provider.endTransaction()
+    inline fun <reified T : DatabaseModelObject> update(
+        updateQuery: String,
+        fetchQuery: String,
+        vararg args: Any
+    ): Single<List<T>> = storage
+        .perform<T, List<T>>(DatabaseOperation.WRITE) { dao ->
+            buildSQLQuery(updateQuery, *args).let { (newQuery, newArgs) ->
+                storage.provider.runInTransaction {
+                    storage.provider.update(newQuery, newArgs)
                 }
             }
+            val foo = buildSQLQuery(fetchQuery, *args).let { (newQuery, newArgs) ->
+                if (newArgs.isEmpty()) {
+                    dao.fetch(SimpleSQLiteQuery(newQuery))
+                } else {
+                    dao.fetch(SimpleSQLiteQuery(newQuery, newArgs))
+                }
+            }
+            foo
         }
+        .doAfterSuccess { models -> models.forEach { storage.notifyObservers(it.toOptional()) } }
 
     /**
      * Fetches objects from the data store using given SQL

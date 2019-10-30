@@ -330,6 +330,39 @@ class DatabaseTests {
         }
     }
 
+    @Test
+    fun testDBUpdateQuery() {
+        val database = createDiskDatabase()
+        val record = TestWallet(address = "asdf", isActive = true, blockchain = "BTC", network = "testnet")
+        val record2 = TestWallet(address = "asdf", isActive = false, blockchain = "BTC", network = "mainnet")
+        val wallets = listOf(record, record2)
+        val expectedWallets = listOf(record2.copy(isActive = true))
+        val observed = mutableListOf<TestWallet>()
+        val latch = CountDownLatch(1)
+
+        database.add(wallets).blockingGet()
+
+        database.observe(TestWallet::class.java)
+            .subscribe({
+                observed.add(it)
+                latch.countDown()
+            }, {
+                latch.countDown()
+            })
+
+        val result = database.update<TestWallet>(
+            "UPDATE TestWallet SET isActive = CASE network = ? WHEN 1 THEN 1 ELSE 0 END WHERE blockchain = ?",
+            "SELECT * FROM TestWallet WHERE network = ? AND blockchain = ?",
+            "mainnet",
+            "BTC"
+        ).blockingGet()
+
+        latch.await()
+
+        Assert.assertEquals(result, expectedWallets)
+        Assert.assertEquals(observed, expectedWallets)
+    }
+
     private fun createDiskDatabase(): Database<MockDatabaseProvider> {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbName = UUID.randomUUID().toString()

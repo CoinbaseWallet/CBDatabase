@@ -18,3 +18,14 @@ data class TestCurrency(
     @PrimaryKey
     override var id: String = code
 }
+
+@Entity(tableName = "TestWallet")
+data class TestWallet(
+    var address: String,
+    var blockchain: String,
+    var network: String,
+    var isActive: Boolean
+) : DatabaseModelObject {
+    @PrimaryKey
+    override var id: String = "$blockchain$network"
+}
