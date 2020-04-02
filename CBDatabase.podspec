@@ -11,10 +11,10 @@ Pod::Spec.new do |s|
   s.social_media_url = 'https://twitter.com/coinbase'
 
   s.ios.deployment_target = '10.0'
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
   s.source_files = 'ios/Source/**/*.swift'
 
-  s.dependency 'RxCocoa', '>= 4.4.0', '< 5.0.0'
-  s.dependency 'RxSwift', '>= 4.4.0', '< 5.0.0'
-  s.dependency 'BigInt',  '>= 3.1.0', '< 4.0.0'
+  s.dependency 'RxCocoa', '>= 4.4.0'
+  s.dependency 'RxSwift', '>= 4.4.0'
+  s.dependency 'BigInt',  '>= 3.1.0'
 end
